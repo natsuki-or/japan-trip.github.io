@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JAPAN MYSTERY TOUR 2026</title>
+    <style>
+        :root {
+            /* Japandi Color Palette */
+            --primary: #D32F2F; /* Japan Red */
+            --bg: #F4F4F0;      /* Warm White/Paper */
+            --card-bg: #FFFFFF;
+            --text: #2D2D2D;    /* Charcoal */
+            --gray: #8A8A8A;
+            --accent: #2E5C5A;  /* Deep Green */
+            --highlight: #E0BC5C; /* Gold/Wood */
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 80px;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--card-bg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            padding-bottom: 10px;
+        }
+        
+        .header-top {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .header-top h1 { margin: 0; font-size: 1.2rem; letter-spacing: 2px; }
+        .header-top .subtitle { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-top: 5px; }
+
+        /* Day Navigation */
+        .day-nav {
+            display: flex;
+            overflow-x: auto;
+            padding: 15px 10px;
+            gap: 12px;
+            scrollbar-width: none;
+        }
+        .day-nav::-webkit-scrollbar { display: none; }
+
+        .day-chip {
+            flex: 0 0 auto;
+            padding: 10px 18px;
+            border-radius: 30px;
+            background: #fff;
+            border: 1px solid #ddd;
+            color: var(--gray);
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .day-chip.active {
+            background: var(--text);
+            color: white;
+            border-color: var(--text);
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .day-chip .date { font-size: 0.7rem; font-weight: normal; opacity: 0.8; display: block; }
+
+        /* --- Timeline --- */
+        .timeline-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .day-heading {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Event Card */
+        .event-card {
+            background: var(--card-bg);
+            margin-bottom: 16px;
+            border-radius: 16px;
+            padding: 0;
+            display: flex;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .event-card:active { transform: scale(0.98); }
+
+        /* Locked State */
+        .event-card.locked {
+            background: #EAEAEA;
+            pointer-events: none; /* Can be changed if you want click-to-reject */
+        }
+        .event-card.locked .content-col { opacity: 0.5; }
+        .event-card.locked .icon-col { filter: grayscale(100%); }
+
+        /* Time Column */
+        .time-col {
+            width: 70px;
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid #f0f0f0;
+            padding: 10px;
+            flex-shrink: 0;
+        }
+        .time-start { font-weight: 800; font-size: 0.95rem; color: var(--text); }
+        .time-end { font-size: 0.75rem; color: var(--gray); margin-top: 4px; }
+
+        /* Content Column */
+        .content-col {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .event-icon { font-size: 1.8rem; width: 40px; text-align: center; }
+        .text-group { flex: 1; }
+        .event-title { font-weight: bold; font-size: 1rem; margin-bottom: 4px; line-height: 1.3; }
+        .event-desc { font-size: 0.8rem; color: var(--gray); }
+        
+        .secret-badge {
+            display: inline-block;
+            background: var(--text);
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+
+        /* Unlock Animation */
+        @keyframes unlockPulse {
+            0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); background: #fff; }
+            70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); background: #FFF5F5; }
+            100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); background: #fff; }
+        }
+        .unlocking { animation: unlockPulse 1s ease-out; }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex; align-items: flex-end; /* Bottom sheet style */
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-sheet {
+            background: white;
+            width: 100%; max-width: 600px;
+            margin: 0 auto;
+            border-radius: 20px 20px 0 0;
+            padding: 30px 20px 40px 20px;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .modal-overlay.active .modal-sheet { transform: translateY(0); }
+
+        .modal-header { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; }
+        .modal-icon { font-size: 2.5rem; background: #f0f0f0; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .modal-title { font-size: 1.4rem; font-weight: bold; line-height: 1.2; }
+        .modal-time { color: var(--primary); font-weight: bold; font-size: 0.9rem; margin-top: 5px; display: block;}
+        
+        .modal-body { font-size: 0.95rem; line-height: 1.6; color: #444; margin-bottom: 25px; }
+        .modal-meta { background: #f9f9f9; padding: 15px; border-radius: 10px; font-size: 0.85rem; color: #666; margin-bottom: 20px;}
+        .meta-row { display: flex; justify-content: space-between; margin-bottom: 5px; border-bottom: 1px dashed #eee; padding-bottom: 5px;}
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn {
+            display: flex; align-items: center; justify-content: center;
+            padding: 14px; border-radius: 12px; font-weight: bold; text-decoration: none;
+            transition: 0.2s;
+        }
+        .btn-map { background: var(--accent); color: white; }
+        .btn-close { background: #eee; color: var(--text); cursor: pointer; }
+
+        /* --- Debug --- */
+        .debug-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #222; color: white; padding: 10px;
+            z-index: 3000; font-size: 0.8rem;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .slider-row { display: flex; width: 100%; gap: 10px; align-items: center; margin-top: 5px; }
+        input[type="range"] { flex: 1; }
+        .hide-debug { position: absolute; right: 10px; top: 5px; color: #aaa; cursor: pointer; }
+
+    </style>
+</head>
+<body>
+
+    <div id="lockScreen" style="position:fixed; top:0; left:0; right:0; bottom:0; background:#222; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
+    <div style="font-size:3rem; margin-bottom:20px;">🔒</div>
+    <h2 style="margin-bottom:20px;">SECRET TRIP 2026</h2>
+    <input type="password" id="passInput" placeholder="Enter Passcode" style="padding:10px; border-radius:5px; border:none; font-size:1.2rem; text-align:center;">
+    <button onclick="checkPass()" style="margin-top:15px; padding:10px 20px; background:#D32F2F; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">UNLOCK</button>
+    <p id="errMsg" style="color:#ff6b6b; margin-top:10px; display:none;">Access Denied</p>
+</div>
+
+<script>
+    function checkPass() {
+        const input = document.getElementById('passInput').value;
+        // 合言葉をここで設定（例: 'japan2026'）
+        if(input === 'japan2026') {
+            document.getElementById('lockScreen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('lockScreen').style.display = 'none';
+            }, 500);
+        } else {
+            document.getElementById('errMsg').style.display = 'block';
+        }
+    }
+</script>
+
+    <div class="debug-bar" id="debugBar">
+        <div class="hide-debug" onclick="document.getElementById('debugBar').style.display='none'">✕</div>
+        <div id="debugInfo">🕒 Time Travel Mode</div>
+        <div class="slider-row">
+            <span>04:00</span>
+            <input type="range" id="timeSlider" min="240" max="1440" value="360" step="15">
+            <span id="debugTimeDisplay">06:00</span>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-top">
+            <h1>JAPAN 2026</h1>
+            <div class="subtitle">Mystery Tour Itinerary</div>
+        </div>
+        <div class="day-nav" id="dayNav">
+            </div>
+    </header>
+
+    <div class="timeline-container" id="timeline">
+        </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-sheet">
+            <div class="modal-header">
+                <div class="modal-icon" id="mIcon"></div>
+                <div>
+                    <div class="modal-title" id="mTitle"></div>
+                    <span class="modal-time" id="mTime"></span>
+                </div>
+            </div>
+            
+            <div class="modal-body" id="mDesc"></div>
+            
+            <div class="modal-meta">
+                <div class="meta-row"><span>📍 Location</span><span id="mLoc" style="font-weight:bold"></span></div>
+                <div class="meta-row"><span>💰 Budget</span><span id="mCost"></span></div>
+                <div class="meta-row" style="border:none; padding-top:5px;"><span>📝 Note</span></div>
+                <div id="mNote" style="font-style:italic;"></div>
+            </div>
+
+            <div class="btn-group">
+                <div class="btn btn-close" onclick="closeModal()">Close</div>
+                <a href="#" id="mMapBtn" target="_blank" class="btn btn-map">Open Map 🗺</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 🛠 CONFIGURATION & DATA
+        // ==========================================
+        
+        const UNLOCK_OFFSET = 120; // 2 hours before event, secret is revealed
+        
+        // Data Structure:
+        // secretTitle: Title shown when locked. If null, shows "Secret Activity"
+        // revealTime: Optional override. If not set, uses (startTime - UNLOCK_OFFSET)
+        
+        const scheduleData = [
+            {
+                id: "d0", date: "4/25", dayName: "Sat", title: "Departure",
+                events: [
+                    { time: "12:35", end: "23:00", title: "Flight to Japan", secretTitle: "Flight to ???", icon: "✈️", 
+                      desc: "LGW -> PEK -> KIX", detail: "Air China CA852 & CA127. Long haul flight. Sleep well!", 
+                      loc: "London Gatwick Airport", cost: "Pre-paid" }
+                ]
+            },
+            {
+                id: "d1", date: "4/26", dayName: "Sun", title: "Arrival in Osaka",
+                events: [
+                    { time: "15:20", end: "16:00", title: "Touchdown KIX", secretTitle: "Arrival", icon: "🛬", 
+                      desc: "Welcome to Japan!", detail: "Immigration, SIM Cards, ATM.", loc: "Kansai Int'l Airport", cost: "-" },
+                    { time: "16:30", end: "17:30", title: "Bus to Umeda", secretTitle: "Moving to City", icon: "🚌", 
+                      desc: "Limousine Bus", detail: "Direct access to Osaka Station.", loc: "Osaka Station", cost: "¥1,800" },
+                    { time: "18:30", end: "20:30", title: "Dinner: Izakaya", secretTitle: "Welcome Dinner", icon: "🍻", 
+                      desc: "Sashisu or Kuroshio", detail: "First night! Sushi, Tempura and Draft Beer.", loc: "Osaka Umeda", cost: "¥4,000" }
+                ]
+            },
+            {
+                id: "d2", date: "4/27", dayName: "Mon", title: "Northbound Mystery",
+                events: [
+                    { time: "05:50", end: "06:20", title: "Bus to Itami", icon: "🚌", loc: "Osaka Station", detail: "Early start.", cost: "¥730" },
+                    { time: "07:15", end: "08:50", title: "Flight to Aomori", secretTitle: "Flight to ???", icon: "✈️", 
+                      desc: "JAL 2151", detail: "Heading to the deep north.", loc: "Aomori Airport", cost: "¥15,000" },
+                    { time: "09:30", end: "10:00", title: "Rent-a-Car", icon: "🚗", desc: "Pickup", loc: "Aomori Airport", detail: "Driver: You.", cost: "-" },
+                    { time: "10:30", end: "12:00", title: "Hirosaki Castle", secretTitle: "Pink & White World", icon: "🌸", 
+                      desc: "Cherry Blossoms & Snow", detail: "2600 cherry trees. Walking tour.", loc: "Hirosaki Park", cost: "¥320" },
+                    { time: "12:30", end: "13:30", title: "Lunch: French", secretTitle: "Mystery Lunch", icon: "🍽", 
+                      desc: "Apple City Specialty", detail: "Hirosaki is famous for apples and French cuisine.", loc: "Hirosaki City", cost: "¥1,500" },
+                    { time: "14:30", end: "16:30", title: "Hakkoda Snow Corridor", secretTitle: "Wall of ???", icon: "🏔", 
+                      desc: "Driving Adventure", detail: "Driving through massive walls of snow.", loc: "Hakkoda Ropeway", cost: "Free" },
+                    { time: "18:30", end: "20:00", title: "Miso Curry Milk Ramen", secretTitle: "Unique Noodle Dinner", icon: "🍜", 
+                      desc: "Aomori Soul Food", detail: "Sounds crazy, tastes amazing.", loc: "Aji no Sapporo Onishi", cost: "¥1,000" }
+                ]
+            },
+            {
+                id: "d3", date: "4/28", dayName: "Tue", title: "Old Capital",
+                events: [
+                    { time: "09:00", end: "11:00", title: "Fly to Itami -> Kyoto", secretTitle: "Moving South", icon: "🚅", 
+                      desc: "Returning to Kansai", loc: "Kyoto Station", detail: "Bus or Train to Kyoto.", cost: "Flight + Train" },
+                    { time: "12:00", end: "13:00", title: "Lunch: Sukiyaki", secretTitle: "Mystery Beef Lunch", icon: "🥩", 
+                      desc: "Kyoto Style", loc: "Kyoto Pontocho", detail: "Traditional beef hotpot.", cost: "¥3,000" },
+                    { time: "14:00", end: "17:00", title: "Kiyomizu-dera & Gion", secretTitle: "Historical Walk", icon: "⛩", 
+                      desc: "The classic Kyoto", loc: "Kiyomizu-dera", detail: "Walking through the old streets.", cost: "¥400" },
+                    { time: "18:00", end: "20:00", title: "Dinner: Udon & Obanzai", secretTitle: "Traditional Dinner", icon: "🍲", 
+                      desc: "Kyoto Home Cooking", loc: "Gion Area", detail: "Simple but profound flavors.", cost: "¥2,000" }
+                ]
+            },
+            {
+                id: "d4", date: "4/29", dayName: "Wed", title: "Zen & Bamboo",
+                events: [
+                    { time: "06:00", end: "08:00", title: "Morning Meditation", secretTitle: "Spiritual Start", icon: "🧘‍♂️", 
+                      desc: "Taizo-in or similar", loc: "Myoshinji", detail: "Zen meditation experience.", cost: "¥1,000" },
+                    { time: "10:00", end: "12:00", title: "Arashiyama Bamboo Grove", secretTitle: "Green Tunnel", icon: "🎋", 
+                      desc: "Morning walk", loc: "Arashiyama Bamboo Forest", detail: "Avoid crowds by going early.", cost: "Free" },
+                    { time: "12:30", end: "13:30", title: "Lunch: Unagi (Eel)", secretTitle: "Power Lunch", icon: "🍱", 
+                      desc: "Grilled Eel", loc: "Arashiyama", detail: "Energy boost for the trip.", cost: "¥3,500" },
+                    { time: "18:00", end: "20:00", title: "Dinner: Yakitori", secretTitle: "Chicken Night", icon: "🍢", 
+                      desc: "Grilled skewers", loc: "Kyoto Downtown", detail: "Casual drinking and eating.", cost: "¥3,000" }
+                ]
+            },
+            {
+                id: "d5", date: "4/30", dayName: "Thu", title: "Gold & Fish",
+                events: [
+                    { time: "08:30", end: "11:00", title: "Train to Kanazawa", secretTitle: "Thunderbird Express", icon: "🚄", 
+                      desc: "Heading to the Sea of Japan", loc: "Kanazawa Station", detail: "Limited Express Thunderbird.", cost: "¥7,000" },
+                    { time: "11:30", end: "12:30", title: "Lunch: Sushi", secretTitle: "Best Sushi in Japan", icon: "🍣", 
+                      desc: "Omicho Market", loc: "Iki-iki Tei", detail: "Fresh seafood from the Sea of Japan.", cost: "¥3,000" },
+                    { time: "13:30", end: "15:30", title: "Kenrokuen Garden", secretTitle: "Perfect Garden", icon: "🌳", 
+                      desc: "One of the Three Great Gardens", loc: "Kenrokuen", detail: "Strolling through perfect landscapes.", cost: "¥320" },
+                    { time: "18:00", end: "20:00", title: "Dinner: Noto Beef", secretTitle: "Wagyu Night", icon: "🥩", 
+                      desc: "Teppanyaki", loc: "Kanazawa Katamachi", detail: "High quality local beef.", cost: "¥6,000" }
+                ]
+            },
+            {
+                id: "d6", date: "5/01", dayName: "Fri", title: "Metropolis",
+                events: [
+                    { time: "09:00", end: "11:30", title: "Shinkansen to Tokyo", secretTitle: "Bullet Train", icon: "🚅", 
+                      desc: "Hokuriku Shinkansen", loc: "Tokyo Station", detail: "Zooming across the country.", cost: "¥14,000" },
+                    { time: "12:30", end: "13:30", title: "Lunch: Tempura", secretTitle: "Crispy Lunch", icon: "🍤", 
+                      desc: "Tempura Abe", loc: "Ginza/Nihonbashi", detail: "Edo-style Tempura.", cost: "¥2,000" },
+                    { time: "15:00", end: "18:00", title: "Shibuya Crossing", secretTitle: "The Busiest Spot", icon: "🚶‍♂️", 
+                      desc: "Scramble Crossing", loc: "Shibuya Station", detail: "Lost in translation vibes.", cost: "-" },
+                    { time: "19:00", end: "21:00", title: "Dinner: Izakaya", secretTitle: "Tokyo Night", icon: "🍶", 
+                      desc: "Drinking with locals", loc: "Yurakucho", detail: "Under the train tracks (Gado-shita).", cost: "¥4,000" }
+                ]
+            },
+            {
+                id: "d7", date: "5/02", dayName: "Sat", title: "Tokyo Deep Dive",
+                events: [
+                    { time: "10:00", end: "12:00", title: "TeamLab Planets", secretTitle: "Digital Art", icon: "✨", 
+                      desc: "Immersive Experience", loc: "TeamLab Planets Toyosu", detail: "Barefoot digital art museum.", cost: "¥3,800" },
+                    { time: "12:30", end: "13:30", title: "Lunch: Tonkatsu", secretTitle: "Fried Pork", icon: "🐷", 
+                      desc: "Crispy & Juicy", loc: "Tokyo", detail: "Thick cut pork cutlet.", cost: "¥2,500" },
+                    { time: "15:00", end: "17:00", title: "Akihabara / Asakusa", secretTitle: "Old & New", icon: "⚡️", 
+                      desc: "Electric Town or Temple", loc: "Akihabara", detail: "Choose your adventure.", cost: "-" },
+                    { time: "18:00", end: "20:00", title: "Dinner: Monjayaki", secretTitle: "Messy Delicious", icon: "🥄", 
+                      desc: "Tokyo Specialty", loc: "Tsukishima", detail: "Cook it yourself on the iron plate.", cost: "¥2,500" }
+                ]
+            },
+            {
+                id: "d8", date: "5/03", dayName: "Sun", title: "Tokyo Leisure",
+                events: [
+                    { time: "10:00", end: "11:00", title: "Breakfast: Gyudon", secretTitle: "Local Fast Food", icon: "🐮", 
+                      desc: "Matsuya / Yoshinoya", loc: "Tokyo", detail: "The real Japanese breakfast.", cost: "¥500" },
+                    { time: "12:00", end: "13:00", title: "Lunch: CoCo Ichi", secretTitle: "Curry House", icon: "🍛", 
+                      desc: "Best Curry Chain", loc: "Tokyo", detail: "Customize your spice level.", cost: "¥1,000" },
+                    { time: "15:00", end: "18:00", title: "Free Time / Shopping", secretTitle: "Free Exploration", icon: "🛍", 
+                      desc: "Ginza / Shinjuku", loc: "Shinjuku", detail: "Last minute shopping.", cost: "-" }
+                ]
+            },
+            {
+                id: "d9", date: "5/04", dayName: "Mon", title: "Pilgrimage Start",
+                events: [
+                    { time: "08:00", end: "12:00", title: "Move to Kii Peninsula", secretTitle: "Deep into Nature", icon: "🌲", 
+                      desc: "Train/Bus", loc: "Kii-Tanabe", detail: "Heading to Kumano Kodo gateway.", cost: "¥10,000" },
+                    { time: "13:00", end: "17:00", title: "Kumano Kodo Trek", secretTitle: "Ancient Trail", icon: "🥾", 
+                      desc: "Spiritual Walk", loc: "Kumano Kodo", detail: "Walking the UNESCO heritage path.", cost: "Free" },
+                    { time: "18:00", end: "20:00", title: "Temple Lodging", secretTitle: "Shukubo Stay", icon: "💤", 
+                      desc: "Monk Lifestyle", loc: "Koyasan / Kumano", detail: "Vegetarian dinner and early sleep.", cost: "¥13,000" }
+                ]
+            },
+            {
+                id: "d10", date: "5/05", dayName: "Tue", title: "Sacred Mountains",
+                events: [
+                    { time: "05:00", end: "06:00", title: "Morning Prayer", secretTitle: "Morning Ritual", icon: "🔥", 
+                      desc: "Fire ceremony", loc: "Temple", detail: "Goma fire ritual.", cost: "-" },
+                    { time: "10:00", end: "14:00", title: "Omine Okugake", secretTitle: "Mountain Asceticism", icon: "⛰", 
+                      desc: "Men's Trip Section", loc: "Mount Omine", detail: "Historically women-prohibited areas (check rules).", cost: "-" },
+                    { time: "17:00", end: "19:00", title: "Onsen Recovery", secretTitle: "Hot Spring", icon: "♨️", 
+                      desc: "Dorogawa Onsen", loc: "Dorogawa Onsen", detail: "Relaxing tired muscles.", cost: "¥1,000" }
+                ]
+            },
+            {
+                id: "d11", date: "5/06", dayName: "Wed", title: "History Lesson",
+                events: [
+                    { time: "09:00", end: "12:00", title: "Move to Hiroshima", secretTitle: "Heading West", icon: "🚄", 
+                      desc: "Shinkansen", loc: "Hiroshima Station", detail: "Long transit to historical site.", cost: "¥12,000" },
+                    { time: "13:00", end: "15:00", title: "Peace Memorial Park", secretTitle: "Important History", icon: "🕊", 
+                      desc: "Atomic Bomb Dome", loc: "Hiroshima Peace Memorial Park", detail: "Museum and park.", cost: "¥200" },
+                    { time: "17:00", end: "19:00", title: "Dinner: Okonomiyaki", secretTitle: "Hiroshima Style", icon: "🥞", 
+                      desc: "Layered Pancake", loc: "Okonomimura", detail: "Noodles inside the pancake.", cost: "¥1,500" }
+                ]
+            },
+            {
+                id: "d12", date: "5/07", dayName: "Thu", title: "Floating Shrine",
+                events: [
+                    { time: "09:00", end: "09:30", title: "Ferry to Miyajima", secretTitle: "Boat Ride", icon: "⛴", 
+                      desc: "To the Island", loc: "Miyajima", detail: "Scenic ferry ride.", cost: "¥180" },
+                    { time: "10:00", end: "12:00", title: "Itsukushima Shrine", secretTitle: "Floating Torii", icon: "⛩", 
+                      desc: "Iconic View", loc: "Itsukushima Jinja", detail: "Check tide times.", cost: "¥300" },
+                    { time: "12:30", end: "13:30", title: "Lunch: Oysters", secretTitle: "Sea Milk", icon: "🦪", 
+                      desc: "Grilled Oysters", loc: "Miyajima", detail: "Fresh from the sea.", cost: "¥2,000" },
+                    { time: "15:00", end: "18:00", title: "Return to Osaka", secretTitle: "Final Transit", icon: "🚄", 
+                      desc: "Shinkansen", loc: "Shin-Osaka Station", detail: "Back to the start point.", cost: "¥10,000" }
+                ]
+            },
+            {
+                id: "d13", date: "5/08", dayName: "Fri", title: "Osaka Last Blast",
+                events: [
+                    { time: "10:00", end: "15:00", title: "USJ / Shopping", secretTitle: "Final Fun", icon: "🎢", 
+                      desc: "Universal Studios or Namba", loc: "Universal Studios Japan", detail: "Mario World?", cost: "¥8,000" },
+                    { time: "18:00", end: "21:00", title: "Farewell Dinner", secretTitle: "The Last Supper", icon: "🍻", 
+                      desc: "Kushikatsu / Yakiniku", loc: "Dotonbori", detail: "Eat until you drop.", cost: "¥5,000" }
+                ]
+            },
+            {
+                id: "d14", date: "5/09", dayName: "Sat", title: "Departure",
+                events: [
+                    { time: "08:00", end: "10:00", title: "Train to KIX", icon: "🚆", loc: "Kansai Airport", detail: "Express train.", cost: "¥1,500" },
+                    { time: "11:00", end: "13:00", title: "Check-in & Fly", secretTitle: "See you Japan", icon: "🛫", 
+                      desc: "KIX -> PEK -> LHR", loc: "Kansai International Airport", detail: "Safe flight home.", cost: "-" }
+                ]
+            }
+        ];
+
+        // ==========================================
+        // ⚙️ LOGIC (No need to edit below)
+        // ==========================================
+
+        let selectedDayIndex = 0;
+        let debugTimeMinutes = 360; // Start at 06:00
+
+        function init() {
+            // Auto-select today if within range (Optional logic for real usage)
+            // For now, default to day 0
+            renderNav();
+            renderTimeline();
+            
+            // Debug Slider Event
+            document.getElementById('timeSlider').addEventListener('input', (e) => {
+                debugTimeMinutes = parseInt(e.target.value);
+                updateDebugDisplay();
+                renderTimeline(); // Re-render on time change
+            });
+        }
+
+        function renderNav() {
+            const nav = document.getElementById('dayNav');
+            nav.innerHTML = '';
+            scheduleData.forEach((day, index) => {
+                const chip = document.createElement('div');
+                chip.className = `day-chip ${index === selectedDayIndex ? 'active' : ''}`;
+                chip.innerHTML = `<span class="date">${day.date}</span>${day.dayName}`;
+                chip.onclick = () => {
+                    selectedDayIndex = index;
+                    renderNav();
+                    renderTimeline();
+                };
+                nav.appendChild(chip);
+            });
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timeline');
+            container.innerHTML = '';
+            
+            const day = scheduleData[selectedDayIndex];
+
+            // Heading
+            const heading = document.createElement('div');
+            heading.className = 'day-heading';
+            heading.textContent = day.title;
+            container.appendChild(heading);
+
+            if(!day.events || day.events.length === 0) {
+                container.innerHTML += `<div style="text-align:center; color:#888; padding:20px;">No events planned.</div>`;
+                return;
+            }
+
+            day.events.forEach(evt => {
+                const startMins = getMinutes(evt.time);
+                // Check Lock Status
+                const revealThreshold = evt.revealTime !== undefined ? evt.revealTime : (startMins - UNLOCK_OFFSET);
+                const isUnlocked = debugTimeMinutes >= revealThreshold;
+
+                const card = document.createElement('div');
+                card.className = `event-card ${isUnlocked ? '' : 'locked'}`;
+                
+                // Animation Logic
+                if(isUnlocked && card.dataset.locked === 'true') {
+                    card.classList.add('unlocking');
+                }
+                card.dataset.locked = !isUnlocked;
+
+                // Determine Display Content
+                const dTitle = isUnlocked ? evt.title : (evt.secretTitle || "Secret Activity");
+                const dIcon = isUnlocked ? evt.icon : "🔒";
+                const dDesc = isUnlocked ? evt.desc : "Wait for it...";
+                const badge = (!isUnlocked) ? `<span class="secret-badge">SECRET</span><br>` : '';
+
+                card.innerHTML = `
+                    <div class="time-col">
+                        <span class="time-start">${evt.time}</span>
+                        <span class="time-end">${evt.end || ''}</span>
+                    </div>
+                    <div class="content-col">
+                        <div class="event-icon">${dIcon}</div>
+                        <div class="text-group">
+                            ${badge}
+                            <div class="event-title">${dTitle}</div>
+                            <div class="event-desc">${dDesc}</div>
+                        </div>
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    if(!isUnlocked) {
+                        alert(`🔒 Locked! Reveals at ${formatTime(revealThreshold)}`);
+                    } else {
+                        openModal(evt, day.date);
+                    }
+                };
+
+                container.appendChild(card);
+            });
+        }
+
+        // --- Helpers ---
+
+        function getMinutes(timeStr) {
+            if(!timeStr) return 0;
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
+        }
+
+        function formatTime(mins) {
+            let h = Math.floor(mins / 60);
+            let m = mins % 60;
+            if(h < 0) h += 24;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        }
+
+        function updateDebugDisplay() {
+            document.getElementById('debugTimeDisplay').textContent = formatTime(debugTimeMinutes);
+        }
+
+        // --- Modal ---
+        const modal = document.getElementById('modal');
+        
+        function openModal(evt, dateStr) {
+            document.getElementById('mIcon').textContent = evt.icon;
+            document.getElementById('mTitle').textContent = evt.title;
+            document.getElementById('mTime').textContent = `${dateStr} ${evt.time} - ${evt.end || '?'}`;
+            document.getElementById('mDesc').textContent = evt.detail || evt.desc;
+            document.getElementById('mLoc').textContent = evt.loc || 'Unknown';
+            document.getElementById('mCost').textContent = evt.cost || '-';
+            document.getElementById('mNote').textContent = "Tap 'Open Map' to see location.";
+            
+            // Map Link
+            const q = encodeURIComponent(evt.loc);
+            document.getElementById('mMapBtn').href = `https://www.google.com/maps/search/?api=1&query=${q}`;
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        // Close when clicking outside sheet
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) closeModal();
+        });
+
+        // Start
+        init();
+
+    </script>
+</body>
+</html>
