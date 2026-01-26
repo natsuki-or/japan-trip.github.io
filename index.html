@@ -24,6 +24,36 @@
             color: var(--text);
             margin: 0;
             padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        /* --- Lock Screen --- */
+        #lockScreen {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #1a1a1a;
+            z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white;
+            transition: opacity 0.5s ease;
+        }
+        .lock-content { text-align: center; width: 80%; max-width: 300px; }
+        .lock-icon { font-size: 3rem; margin-bottom: 20px; animation: bounce 2s infinite; }
+        .pass-input {
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444;
+            background: #333; color: white; font-size: 1.1rem; text-align: center; margin-bottom: 15px;
+            outline: none;
+        }
+        .pass-input:focus { border-color: var(--primary); }
+        .unlock-btn {
+            width: 100%; padding: 12px; background: var(--primary); color: white;
+            border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;
+        }
+        .error-msg { color: #ff6b6b; margin-top: 15px; font-size: 0.9rem; min-height: 1.2em; opacity: 0; transition: opacity 0.3s; }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
         }
 
         /* --- Header --- */
@@ -40,9 +70,19 @@
             padding: 15px;
             text-align: center;
             border-bottom: 1px solid #f0f0f0;
+            position: relative;
         }
         .header-top h1 { margin: 0; font-size: 1.2rem; letter-spacing: 2px; }
         .header-top .subtitle { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; margin-top: 5px; }
+        
+        /* Live Clock Badge */
+        .live-badge {
+            position: absolute; right: 15px; top: 15px;
+            font-size: 0.7rem; background: #eee; padding: 4px 8px; border-radius: 4px; color: #555;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .live-dot { width: 6px; height: 6px; background: red; border-radius: 50%; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
 
         /* Day Navigation */
         .day-nav {
@@ -108,7 +148,7 @@
         /* Locked State */
         .event-card.locked {
             background: #EAEAEA;
-            pointer-events: none; /* Can be changed if you want click-to-reject */
+            pointer-events: none;
         }
         .event-card.locked .content-col { opacity: 0.5; }
         .event-card.locked .icon-col { filter: grayscale(100%); }
@@ -198,12 +238,13 @@
         .btn-map { background: var(--accent); color: white; }
         .btn-close { background: #eee; color: var(--text); cursor: pointer; }
 
-        /* --- Debug --- */
+        /* --- Debug Bar (Admin Only) --- */
         .debug-bar {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: #222; color: white; padding: 10px;
             z-index: 3000; font-size: 0.8rem;
-            display: flex; flex-direction: column; align-items: center;
+            display: none; /* Hidden by default */
+            flex-direction: column; align-items: center;
         }
         .slider-row { display: flex; width: 100%; gap: 10px; align-items: center; margin-top: 5px; }
         input[type="range"] { flex: 1; }
@@ -213,32 +254,20 @@
 </head>
 <body>
 
-    <div id="lockScreen" style="position:fixed; top:0; left:0; right:0; bottom:0; background:#222; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
-    <div style="font-size:3rem; margin-bottom:20px;">🔒</div>
-    <h2 style="margin-bottom:20px;">SECRET TRIP 2026</h2>
-    <input type="password" id="passInput" placeholder="Enter Passcode" style="padding:10px; border-radius:5px; border:none; font-size:1.2rem; text-align:center;">
-    <button onclick="checkPass()" style="margin-top:15px; padding:10px 20px; background:#D32F2F; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">UNLOCK</button>
-    <p id="errMsg" style="color:#ff6b6b; margin-top:10px; display:none;">Access Denied</p>
-</div>
-
-<script>
-    function checkPass() {
-        const input = document.getElementById('passInput').value;
-        // 合言葉をここで設定（例: 'japan2026'）
-        if(input === 'japan2026') {
-            document.getElementById('lockScreen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('lockScreen').style.display = 'none';
-            }, 500);
-        } else {
-            document.getElementById('errMsg').style.display = 'block';
-        }
-    }
-</script>
+    <div id="lockScreen">
+        <div class="lock-content">
+            <div class="lock-icon">🔒</div>
+            <h2 style="margin-bottom:10px;">SECRET TRIP 2026</h2>
+            <p style="margin-bottom:20px; font-size:0.9rem; color:#aaa;">Restricted Access</p>
+            <input type="password" id="passInput" class="pass-input" placeholder="Passcode" onkeyup="if(event.key==='Enter') unlockApp()">
+            <button class="unlock-btn" onclick="unlockApp()">ENTER</button>
+            <div id="errorMsg" class="error-msg">Incorrect Passcode</div>
+        </div>
+    </div>
 
     <div class="debug-bar" id="debugBar">
         <div class="hide-debug" onclick="document.getElementById('debugBar').style.display='none'">✕</div>
-        <div id="debugInfo">🕒 Time Travel Mode</div>
+        <div id="debugInfo">🕹 Admin Mode: Time Travel</div>
         <div class="slider-row">
             <span>04:00</span>
             <input type="range" id="timeSlider" min="240" max="1440" value="360" step="15">
@@ -250,6 +279,9 @@
         <div class="header-top">
             <h1>JAPAN 2026</h1>
             <div class="subtitle">Mystery Tour Itinerary</div>
+            <div class="live-badge" id="liveBadge" style="display:none;">
+                <div class="live-dot"></div><span id="currentTimeStr">--:--</span>
+            </div>
         </div>
         <div class="day-nav" id="dayNav">
             </div>
@@ -267,16 +299,13 @@
                     <span class="modal-time" id="mTime"></span>
                 </div>
             </div>
-            
             <div class="modal-body" id="mDesc"></div>
-            
             <div class="modal-meta">
                 <div class="meta-row"><span>📍 Location</span><span id="mLoc" style="font-weight:bold"></span></div>
                 <div class="meta-row"><span>💰 Budget</span><span id="mCost"></span></div>
                 <div class="meta-row" style="border:none; padding-top:5px;"><span>📝 Note</span></div>
                 <div id="mNote" style="font-style:italic;"></div>
             </div>
-
             <div class="btn-group">
                 <div class="btn btn-close" onclick="closeModal()">Close</div>
                 <a href="#" id="mMapBtn" target="_blank" class="btn btn-map">Open Map 🗺</a>
@@ -286,213 +315,289 @@
 
     <script>
         // ==========================================
-        // 🛠 CONFIGURATION & DATA
+        // 🛠 CONFIGURATION
         // ==========================================
         
-        const UNLOCK_OFFSET = 120; // 2 hours before event, secret is revealed
+        // Passcodes
+        const PASS_USER = "japan2026"; // Real-time mode (for friends)
+        const PASS_ADMIN = "admin";    // Debug mode (for you)
+
+        // Logic
+        const UNLOCK_OFFSET = 120; // Minutes before event to reveal
         
-        // Data Structure:
-        // secretTitle: Title shown when locked. If null, shows "Secret Activity"
-        // revealTime: Optional override. If not set, uses (startTime - UNLOCK_OFFSET)
-        
+        // Data (YYYY/MM/DD format is important for Real-time mode)
         const scheduleData = [
             {
-                id: "d0", date: "4/25", dayName: "Sat", title: "Departure",
+                id: "d0", dateStr: "2026/04/25", dayDisp: "4/25", dayName: "Sat", title: "Departure",
                 events: [
                     { time: "12:35", end: "23:00", title: "Flight to Japan", secretTitle: "Flight to ???", icon: "✈️", 
-                      desc: "LGW -> PEK -> KIX", detail: "Air China CA852 & CA127. Long haul flight. Sleep well!", 
-                      loc: "London Gatwick Airport", cost: "Pre-paid" }
+                      desc: "LGW -> PEK -> KIX", detail: "Air China CA852 & CA127.", loc: "London Gatwick Airport", cost: "Pre-paid" }
                 ]
             },
             {
-                id: "d1", date: "4/26", dayName: "Sun", title: "Arrival in Osaka",
+                id: "d1", dateStr: "2026/04/26", dayDisp: "4/26", dayName: "Sun", title: "Arrival in Osaka",
                 events: [
                     { time: "15:20", end: "16:00", title: "Touchdown KIX", secretTitle: "Arrival", icon: "🛬", 
-                      desc: "Welcome to Japan!", detail: "Immigration, SIM Cards, ATM.", loc: "Kansai Int'l Airport", cost: "-" },
+                      desc: "Welcome to Japan!", detail: "Immigration, SIM Cards.", loc: "Kansai Int'l Airport", cost: "-" },
                     { time: "16:30", end: "17:30", title: "Bus to Umeda", secretTitle: "Moving to City", icon: "🚌", 
-                      desc: "Limousine Bus", detail: "Direct access to Osaka Station.", loc: "Osaka Station", cost: "¥1,800" },
+                      desc: "Limousine Bus", detail: "Cost: ¥1,800.", loc: "Osaka Station", cost: "¥1,800" },
                     { time: "18:30", end: "20:30", title: "Dinner: Izakaya", secretTitle: "Welcome Dinner", icon: "🍻", 
-                      desc: "Sashisu or Kuroshio", detail: "First night! Sushi, Tempura and Draft Beer.", loc: "Osaka Umeda", cost: "¥4,000" }
+                      desc: "Sashisu or Kuroshio", detail: "Sushi and Beer!", loc: "Osaka Umeda", cost: "¥4,000" }
                 ]
             },
             {
-                id: "d2", date: "4/27", dayName: "Mon", title: "Northbound Mystery",
+                id: "d2", dateStr: "2026/04/27", dayDisp: "4/27", dayName: "Mon", title: "Northbound Mystery",
                 events: [
                     { time: "05:50", end: "06:20", title: "Bus to Itami", icon: "🚌", loc: "Osaka Station", detail: "Early start.", cost: "¥730" },
                     { time: "07:15", end: "08:50", title: "Flight to Aomori", secretTitle: "Flight to ???", icon: "✈️", 
-                      desc: "JAL 2151", detail: "Heading to the deep north.", loc: "Aomori Airport", cost: "¥15,000" },
+                      desc: "JAL 2151", detail: "Heading North.", loc: "Aomori Airport", cost: "¥15,000" },
                     { time: "09:30", end: "10:00", title: "Rent-a-Car", icon: "🚗", desc: "Pickup", loc: "Aomori Airport", detail: "Driver: You.", cost: "-" },
-                    { time: "10:30", end: "12:00", title: "Hirosaki Castle", secretTitle: "Pink & White World", icon: "🌸", 
-                      desc: "Cherry Blossoms & Snow", detail: "2600 cherry trees. Walking tour.", loc: "Hirosaki Park", cost: "¥320" },
+                    { time: "10:30", end: "12:00", title: "Hirosaki Castle", secretTitle: "Pink & White", icon: "🌸", 
+                      desc: "Cherry Blossoms & Snow", detail: "2600 cherry trees.", loc: "Hirosaki Park", cost: "¥320" },
                     { time: "12:30", end: "13:30", title: "Lunch: French", secretTitle: "Mystery Lunch", icon: "🍽", 
-                      desc: "Apple City Specialty", detail: "Hirosaki is famous for apples and French cuisine.", loc: "Hirosaki City", cost: "¥1,500" },
+                      desc: "Local Specialty", detail: "Hirosaki French Cuisine.", loc: "Hirosaki City", cost: "¥1,500" },
                     { time: "14:30", end: "16:30", title: "Hakkoda Snow Corridor", secretTitle: "Wall of ???", icon: "🏔", 
-                      desc: "Driving Adventure", detail: "Driving through massive walls of snow.", loc: "Hakkoda Ropeway", cost: "Free" },
-                    { time: "18:30", end: "20:00", title: "Miso Curry Milk Ramen", secretTitle: "Unique Noodle Dinner", icon: "🍜", 
-                      desc: "Aomori Soul Food", detail: "Sounds crazy, tastes amazing.", loc: "Aji no Sapporo Onishi", cost: "¥1,000" }
+                      desc: "Driving Adventure", detail: "Snow walls.", loc: "Hakkoda Ropeway", cost: "Free" },
+                    { time: "18:30", end: "20:00", title: "Miso Curry Milk Ramen", secretTitle: "Unique Ramen", icon: "🍜", 
+                      desc: "Aomori Soul Food", detail: "Surprisingly good.", loc: "Aji no Sapporo Onishi", cost: "¥1,000" }
                 ]
             },
             {
-                id: "d3", date: "4/28", dayName: "Tue", title: "Old Capital",
+                id: "d3", dateStr: "2026/04/28", dayDisp: "4/28", dayName: "Tue", title: "Old Capital",
                 events: [
-                    { time: "09:00", end: "11:00", title: "Fly to Itami -> Kyoto", secretTitle: "Moving South", icon: "🚅", 
-                      desc: "Returning to Kansai", loc: "Kyoto Station", detail: "Bus or Train to Kyoto.", cost: "Flight + Train" },
-                    { time: "12:00", end: "13:00", title: "Lunch: Sukiyaki", secretTitle: "Mystery Beef Lunch", icon: "🥩", 
-                      desc: "Kyoto Style", loc: "Kyoto Pontocho", detail: "Traditional beef hotpot.", cost: "¥3,000" },
-                    { time: "14:00", end: "17:00", title: "Kiyomizu-dera & Gion", secretTitle: "Historical Walk", icon: "⛩", 
-                      desc: "The classic Kyoto", loc: "Kiyomizu-dera", detail: "Walking through the old streets.", cost: "¥400" },
-                    { time: "18:00", end: "20:00", title: "Dinner: Udon & Obanzai", secretTitle: "Traditional Dinner", icon: "🍲", 
-                      desc: "Kyoto Home Cooking", loc: "Gion Area", detail: "Simple but profound flavors.", cost: "¥2,000" }
+                    { time: "09:00", end: "11:00", title: "Move to Kyoto", secretTitle: "Moving South", icon: "🚅", 
+                      desc: "Flight/Train", loc: "Kyoto Station", detail: "Back to Kansai.", cost: "¥20,000" },
+                    { time: "12:00", end: "13:00", title: "Lunch: Sukiyaki", secretTitle: "Mystery Beef", icon: "🥩", 
+                      desc: "Kyoto Style", loc: "Pontocho", detail: "Beef hotpot.", cost: "¥3,000" },
+                    { time: "14:00", end: "17:00", title: "Kiyomizu & Gion", secretTitle: "Historical Walk", icon: "⛩", 
+                      desc: "Classic Kyoto", loc: "Kiyomizu-dera", detail: "Walking tour.", cost: "¥400" },
+                    { time: "18:00", end: "20:00", title: "Dinner: Udon", secretTitle: "Traditional Dinner", icon: "🍲", 
+                      desc: "Kyoto Flavors", loc: "Gion", detail: "Udon noodles.", cost: "¥2,000" }
                 ]
             },
             {
-                id: "d4", date: "4/29", dayName: "Wed", title: "Zen & Bamboo",
+                id: "d4", dateStr: "2026/04/29", dayDisp: "4/29", dayName: "Wed", title: "Zen & Bamboo",
                 events: [
-                    { time: "06:00", end: "08:00", title: "Morning Meditation", secretTitle: "Spiritual Start", icon: "🧘‍♂️", 
-                      desc: "Taizo-in or similar", loc: "Myoshinji", detail: "Zen meditation experience.", cost: "¥1,000" },
-                    { time: "10:00", end: "12:00", title: "Arashiyama Bamboo Grove", secretTitle: "Green Tunnel", icon: "🎋", 
-                      desc: "Morning walk", loc: "Arashiyama Bamboo Forest", detail: "Avoid crowds by going early.", cost: "Free" },
-                    { time: "12:30", end: "13:30", title: "Lunch: Unagi (Eel)", secretTitle: "Power Lunch", icon: "🍱", 
-                      desc: "Grilled Eel", loc: "Arashiyama", detail: "Energy boost for the trip.", cost: "¥3,500" },
+                    { time: "06:00", end: "08:00", title: "Meditation", secretTitle: "Spiritual Start", icon: "🧘‍♂️", 
+                      desc: "Zen Temple", loc: "Myoshinji", detail: "Morning Zazen.", cost: "¥1,000" },
+                    { time: "10:00", end: "12:00", title: "Bamboo Grove", secretTitle: "Green Tunnel", icon: "🎋", 
+                      desc: "Arashiyama", loc: "Arashiyama Bamboo Forest", detail: "Morning walk.", cost: "Free" },
+                    { time: "12:30", end: "13:30", title: "Lunch: Unagi", secretTitle: "Power Lunch", icon: "🍱", 
+                      desc: "Grilled Eel", loc: "Arashiyama", detail: "Energy boost.", cost: "¥3,500" },
                     { time: "18:00", end: "20:00", title: "Dinner: Yakitori", secretTitle: "Chicken Night", icon: "🍢", 
-                      desc: "Grilled skewers", loc: "Kyoto Downtown", detail: "Casual drinking and eating.", cost: "¥3,000" }
+                      desc: "Skewers", loc: "Kyoto", detail: "Izakaya style.", cost: "¥3,000" }
                 ]
             },
             {
-                id: "d5", date: "4/30", dayName: "Thu", title: "Gold & Fish",
+                id: "d5", dateStr: "2026/04/30", dayDisp: "4/30", dayName: "Thu", title: "Gold & Fish",
                 events: [
-                    { time: "08:30", end: "11:00", title: "Train to Kanazawa", secretTitle: "Thunderbird Express", icon: "🚄", 
-                      desc: "Heading to the Sea of Japan", loc: "Kanazawa Station", detail: "Limited Express Thunderbird.", cost: "¥7,000" },
-                    { time: "11:30", end: "12:30", title: "Lunch: Sushi", secretTitle: "Best Sushi in Japan", icon: "🍣", 
-                      desc: "Omicho Market", loc: "Iki-iki Tei", detail: "Fresh seafood from the Sea of Japan.", cost: "¥3,000" },
-                    { time: "13:30", end: "15:30", title: "Kenrokuen Garden", secretTitle: "Perfect Garden", icon: "🌳", 
-                      desc: "One of the Three Great Gardens", loc: "Kenrokuen", detail: "Strolling through perfect landscapes.", cost: "¥320" },
+                    { time: "08:30", end: "11:00", title: "Train to Kanazawa", secretTitle: "Thunderbird", icon: "🚄", 
+                      desc: "Express Train", loc: "Kanazawa Station", detail: "Limited Express.", cost: "¥7,000" },
+                    { time: "11:30", end: "12:30", title: "Lunch: Sushi", secretTitle: "Best Sushi", icon: "🍣", 
+                      desc: "Omicho Market", loc: "Iki-iki Tei", detail: "Fresh seafood.", cost: "¥3,000" },
+                    { time: "13:30", end: "15:30", title: "Kenrokuen", secretTitle: "Perfect Garden", icon: "🌳", 
+                      desc: "Great Garden", loc: "Kenrokuen", detail: "Landscape garden.", cost: "¥320" },
                     { time: "18:00", end: "20:00", title: "Dinner: Noto Beef", secretTitle: "Wagyu Night", icon: "🥩", 
-                      desc: "Teppanyaki", loc: "Kanazawa Katamachi", detail: "High quality local beef.", cost: "¥6,000" }
+                      desc: "Teppanyaki", loc: "Katamachi", detail: "Local Wagyu.", cost: "¥6,000" }
                 ]
             },
             {
-                id: "d6", date: "5/01", dayName: "Fri", title: "Metropolis",
+                id: "d6", dateStr: "2026/05/01", dayDisp: "5/01", dayName: "Fri", title: "Metropolis",
                 events: [
                     { time: "09:00", end: "11:30", title: "Shinkansen to Tokyo", secretTitle: "Bullet Train", icon: "🚅", 
-                      desc: "Hokuriku Shinkansen", loc: "Tokyo Station", detail: "Zooming across the country.", cost: "¥14,000" },
+                      desc: "Hokuriku Shinkansen", loc: "Tokyo Station", detail: "To the capital.", cost: "¥14,000" },
                     { time: "12:30", end: "13:30", title: "Lunch: Tempura", secretTitle: "Crispy Lunch", icon: "🍤", 
-                      desc: "Tempura Abe", loc: "Ginza/Nihonbashi", detail: "Edo-style Tempura.", cost: "¥2,000" },
-                    { time: "15:00", end: "18:00", title: "Shibuya Crossing", secretTitle: "The Busiest Spot", icon: "🚶‍♂️", 
-                      desc: "Scramble Crossing", loc: "Shibuya Station", detail: "Lost in translation vibes.", cost: "-" },
+                      desc: "Tempura Abe", loc: "Ginza", detail: "Edo style.", cost: "¥2,000" },
+                    { time: "15:00", end: "18:00", title: "Shibuya Crossing", secretTitle: "Chaos", icon: "🚶‍♂️", 
+                      desc: "Scramble", loc: "Shibuya", detail: "Famous crossing.", cost: "-" },
                     { time: "19:00", end: "21:00", title: "Dinner: Izakaya", secretTitle: "Tokyo Night", icon: "🍶", 
-                      desc: "Drinking with locals", loc: "Yurakucho", detail: "Under the train tracks (Gado-shita).", cost: "¥4,000" }
+                      desc: "Under the tracks", loc: "Yurakucho", detail: "Gado-shita.", cost: "¥4,000" }
                 ]
             },
             {
-                id: "d7", date: "5/02", dayName: "Sat", title: "Tokyo Deep Dive",
+                id: "d7", dateStr: "2026/05/02", dayDisp: "5/02", dayName: "Sat", title: "Tokyo Deep Dive",
                 events: [
                     { time: "10:00", end: "12:00", title: "TeamLab Planets", secretTitle: "Digital Art", icon: "✨", 
-                      desc: "Immersive Experience", loc: "TeamLab Planets Toyosu", detail: "Barefoot digital art museum.", cost: "¥3,800" },
+                      desc: "Immersive", loc: "TeamLab Planets", detail: "Barefoot art.", cost: "¥3,800" },
                     { time: "12:30", end: "13:30", title: "Lunch: Tonkatsu", secretTitle: "Fried Pork", icon: "🐷", 
-                      desc: "Crispy & Juicy", loc: "Tokyo", detail: "Thick cut pork cutlet.", cost: "¥2,500" },
-                    { time: "15:00", end: "17:00", title: "Akihabara / Asakusa", secretTitle: "Old & New", icon: "⚡️", 
-                      desc: "Electric Town or Temple", loc: "Akihabara", detail: "Choose your adventure.", cost: "-" },
-                    { time: "18:00", end: "20:00", title: "Dinner: Monjayaki", secretTitle: "Messy Delicious", icon: "🥄", 
-                      desc: "Tokyo Specialty", loc: "Tsukishima", detail: "Cook it yourself on the iron plate.", cost: "¥2,500" }
+                      desc: "Crispy", loc: "Tokyo", detail: "Pork cutlet.", cost: "¥2,500" },
+                    { time: "15:00", end: "17:00", title: "Akihabara", secretTitle: "Electric Town", icon: "⚡️", 
+                      desc: "Otaku Culture", loc: "Akihabara", detail: "Anime & Games.", cost: "-" },
+                    { time: "18:00", end: "20:00", title: "Dinner: Monjayaki", secretTitle: "Messy Food", icon: "🥄", 
+                      desc: "Tokyo Style", loc: "Tsukishima", detail: "DIY cooking.", cost: "¥2,500" }
                 ]
             },
             {
-                id: "d8", date: "5/03", dayName: "Sun", title: "Tokyo Leisure",
+                id: "d8", dateStr: "2026/05/03", dayDisp: "5/03", dayName: "Sun", title: "Tokyo Leisure",
                 events: [
-                    { time: "10:00", end: "11:00", title: "Breakfast: Gyudon", secretTitle: "Local Fast Food", icon: "🐮", 
-                      desc: "Matsuya / Yoshinoya", loc: "Tokyo", detail: "The real Japanese breakfast.", cost: "¥500" },
-                    { time: "12:00", end: "13:00", title: "Lunch: CoCo Ichi", secretTitle: "Curry House", icon: "🍛", 
-                      desc: "Best Curry Chain", loc: "Tokyo", detail: "Customize your spice level.", cost: "¥1,000" },
-                    { time: "15:00", end: "18:00", title: "Free Time / Shopping", secretTitle: "Free Exploration", icon: "🛍", 
-                      desc: "Ginza / Shinjuku", loc: "Shinjuku", detail: "Last minute shopping.", cost: "-" }
+                    { time: "10:00", end: "11:00", title: "Breakfast: Gyudon", secretTitle: "Fast Food", icon: "🐮", 
+                      desc: "Matsuya", loc: "Tokyo", detail: "Japanese breakfast.", cost: "¥500" },
+                    { time: "15:00", end: "18:00", title: "Free Time", secretTitle: "Exploration", icon: "🛍", 
+                      desc: "Shopping", loc: "Shinjuku", detail: "Free time.", cost: "-" }
                 ]
             },
             {
-                id: "d9", date: "5/04", dayName: "Mon", title: "Pilgrimage Start",
+                id: "d9", dateStr: "2026/05/04", dayDisp: "5/04", dayName: "Mon", title: "Pilgrimage Start",
                 events: [
-                    { time: "08:00", end: "12:00", title: "Move to Kii Peninsula", secretTitle: "Deep into Nature", icon: "🌲", 
-                      desc: "Train/Bus", loc: "Kii-Tanabe", detail: "Heading to Kumano Kodo gateway.", cost: "¥10,000" },
-                    { time: "13:00", end: "17:00", title: "Kumano Kodo Trek", secretTitle: "Ancient Trail", icon: "🥾", 
-                      desc: "Spiritual Walk", loc: "Kumano Kodo", detail: "Walking the UNESCO heritage path.", cost: "Free" },
-                    { time: "18:00", end: "20:00", title: "Temple Lodging", secretTitle: "Shukubo Stay", icon: "💤", 
-                      desc: "Monk Lifestyle", loc: "Koyasan / Kumano", detail: "Vegetarian dinner and early sleep.", cost: "¥13,000" }
+                    { time: "08:00", end: "12:00", title: "Move to Kii", secretTitle: "Deep Nature", icon: "🌲", 
+                      desc: "Train/Bus", loc: "Kii-Tanabe", detail: "Gateway to Kumano.", cost: "¥10,000" },
+                    { time: "13:00", end: "17:00", title: "Kumano Kodo", secretTitle: "Ancient Trail", icon: "🥾", 
+                      desc: "Trekking", loc: "Kumano Kodo", detail: "World Heritage.", cost: "Free" },
+                    { time: "18:00", end: "20:00", title: "Temple Lodging", secretTitle: "Monk Stay", icon: "💤", 
+                      desc: "Shukubo", loc: "Koyasan", detail: "Vegetarian dinner.", cost: "¥13,000" }
                 ]
             },
             {
-                id: "d10", date: "5/05", dayName: "Tue", title: "Sacred Mountains",
+                id: "d10", dateStr: "2026/05/05", dayDisp: "5/05", dayName: "Tue", title: "Sacred Mountains",
                 events: [
-                    { time: "05:00", end: "06:00", title: "Morning Prayer", secretTitle: "Morning Ritual", icon: "🔥", 
-                      desc: "Fire ceremony", loc: "Temple", detail: "Goma fire ritual.", cost: "-" },
-                    { time: "10:00", end: "14:00", title: "Omine Okugake", secretTitle: "Mountain Asceticism", icon: "⛰", 
-                      desc: "Men's Trip Section", loc: "Mount Omine", detail: "Historically women-prohibited areas (check rules).", cost: "-" },
-                    { time: "17:00", end: "19:00", title: "Onsen Recovery", secretTitle: "Hot Spring", icon: "♨️", 
-                      desc: "Dorogawa Onsen", loc: "Dorogawa Onsen", detail: "Relaxing tired muscles.", cost: "¥1,000" }
+                    { time: "05:00", end: "06:00", title: "Morning Prayer", secretTitle: "Ritual", icon: "🔥", 
+                      desc: "Fire ceremony", loc: "Temple", detail: "Goma fire.", cost: "-" },
+                    { time: "10:00", end: "14:00", title: "Omine Okugake", secretTitle: "Asceticism", icon: "⛰", 
+                      desc: "Mountain", loc: "Mount Omine", detail: "Tradition.", cost: "-" },
+                    { time: "17:00", end: "19:00", title: "Onsen", secretTitle: "Hot Spring", icon: "♨️", 
+                      desc: "Dorogawa", loc: "Dorogawa Onsen", detail: "Relaxation.", cost: "¥1,000" }
                 ]
             },
             {
-                id: "d11", date: "5/06", dayName: "Wed", title: "History Lesson",
+                id: "d11", dateStr: "2026/05/06", dayDisp: "5/06", dayName: "Wed", title: "History",
                 events: [
                     { time: "09:00", end: "12:00", title: "Move to Hiroshima", secretTitle: "Heading West", icon: "🚄", 
-                      desc: "Shinkansen", loc: "Hiroshima Station", detail: "Long transit to historical site.", cost: "¥12,000" },
-                    { time: "13:00", end: "15:00", title: "Peace Memorial Park", secretTitle: "Important History", icon: "🕊", 
-                      desc: "Atomic Bomb Dome", loc: "Hiroshima Peace Memorial Park", detail: "Museum and park.", cost: "¥200" },
+                      desc: "Shinkansen", loc: "Hiroshima Station", detail: "Transit.", cost: "¥12,000" },
+                    { time: "13:00", end: "15:00", title: "Peace Park", secretTitle: "History", icon: "🕊", 
+                      desc: "Memorial", loc: "Hiroshima Peace Memorial Park", detail: "Museum.", cost: "¥200" },
                     { time: "17:00", end: "19:00", title: "Dinner: Okonomiyaki", secretTitle: "Hiroshima Style", icon: "🥞", 
-                      desc: "Layered Pancake", loc: "Okonomimura", detail: "Noodles inside the pancake.", cost: "¥1,500" }
+                      desc: "Layers", loc: "Okonomimura", detail: "Noodles inside.", cost: "¥1,500" }
                 ]
             },
             {
-                id: "d12", date: "5/07", dayName: "Thu", title: "Floating Shrine",
+                id: "d12", dateStr: "2026/05/07", dayDisp: "5/07", dayName: "Thu", title: "Floating Shrine",
                 events: [
-                    { time: "09:00", end: "09:30", title: "Ferry to Miyajima", secretTitle: "Boat Ride", icon: "⛴", 
-                      desc: "To the Island", loc: "Miyajima", detail: "Scenic ferry ride.", cost: "¥180" },
+                    { time: "09:00", end: "09:30", title: "Ferry", secretTitle: "Boat Ride", icon: "⛴", 
+                      desc: "To Island", loc: "Miyajima", detail: "Scenic ride.", cost: "¥180" },
                     { time: "10:00", end: "12:00", title: "Itsukushima Shrine", secretTitle: "Floating Torii", icon: "⛩", 
-                      desc: "Iconic View", loc: "Itsukushima Jinja", detail: "Check tide times.", cost: "¥300" },
+                      desc: "Iconic View", loc: "Itsukushima Jinja", detail: "World Heritage.", cost: "¥300" },
                     { time: "12:30", end: "13:30", title: "Lunch: Oysters", secretTitle: "Sea Milk", icon: "🦪", 
-                      desc: "Grilled Oysters", loc: "Miyajima", detail: "Fresh from the sea.", cost: "¥2,000" },
+                      desc: "Grilled", loc: "Miyajima", detail: "Fresh oysters.", cost: "¥2,000" },
                     { time: "15:00", end: "18:00", title: "Return to Osaka", secretTitle: "Final Transit", icon: "🚄", 
-                      desc: "Shinkansen", loc: "Shin-Osaka Station", detail: "Back to the start point.", cost: "¥10,000" }
+                      desc: "Shinkansen", loc: "Shin-Osaka", detail: "Back to start.", cost: "¥10,000" }
                 ]
             },
             {
-                id: "d13", date: "5/08", dayName: "Fri", title: "Osaka Last Blast",
+                id: "d13", dateStr: "2026/05/08", dayDisp: "5/08", dayName: "Fri", title: "Last Blast",
                 events: [
-                    { time: "10:00", end: "15:00", title: "USJ / Shopping", secretTitle: "Final Fun", icon: "🎢", 
-                      desc: "Universal Studios or Namba", loc: "Universal Studios Japan", detail: "Mario World?", cost: "¥8,000" },
-                    { time: "18:00", end: "21:00", title: "Farewell Dinner", secretTitle: "The Last Supper", icon: "🍻", 
-                      desc: "Kushikatsu / Yakiniku", loc: "Dotonbori", detail: "Eat until you drop.", cost: "¥5,000" }
+                    { time: "10:00", end: "15:00", title: "USJ / Free", secretTitle: "Final Fun", icon: "🎢", 
+                      desc: "Universal or Shopping", loc: "USJ", detail: "Theme park.", cost: "¥8,000" },
+                    { time: "18:00", end: "21:00", title: "Farewell Dinner", secretTitle: "Last Supper", icon: "🍻", 
+                      desc: "Party", loc: "Dotonbori", detail: "Eat everything.", cost: "¥5,000" }
                 ]
             },
             {
-                id: "d14", date: "5/09", dayName: "Sat", title: "Departure",
+                id: "d14", dateStr: "2026/05/09", dayDisp: "5/09", dayName: "Sat", title: "Departure",
                 events: [
-                    { time: "08:00", end: "10:00", title: "Train to KIX", icon: "🚆", loc: "Kansai Airport", detail: "Express train.", cost: "¥1,500" },
-                    { time: "11:00", end: "13:00", title: "Check-in & Fly", secretTitle: "See you Japan", icon: "🛫", 
-                      desc: "KIX -> PEK -> LHR", loc: "Kansai International Airport", detail: "Safe flight home.", cost: "-" }
+                    { time: "08:00", end: "10:00", title: "Train to KIX", icon: "🚆", loc: "Kansai Airport", detail: "Express.", cost: "¥1,500" },
+                    { time: "11:00", end: "13:00", title: "Fly Home", secretTitle: "See you", icon: "🛫", 
+                      desc: "KIX -> LHR", loc: "Kansai Airport", detail: "Safe flight.", cost: "-" }
                 ]
             }
         ];
 
         // ==========================================
-        // ⚙️ LOGIC (No need to edit below)
+        // ⚙️ LOGIC
         // ==========================================
 
+        let isAdmin = false;
         let selectedDayIndex = 0;
-        let debugTimeMinutes = 360; // Start at 06:00
+        let debugTimeMinutes = 360; // 6:00 AM for admin
+        let timerInterval = null;
 
-        function init() {
-            // Auto-select today if within range (Optional logic for real usage)
-            // For now, default to day 0
+        // Unlock Function
+        function unlockApp() {
+            const input = document.getElementById('passInput').value;
+            const err = document.getElementById('errorMsg');
+            
+            if (input === PASS_USER) {
+                // USER MODE (Real Time)
+                isAdmin = false;
+                completeUnlock();
+                startRealTimeClock();
+            } else if (input === PASS_ADMIN) {
+                // ADMIN MODE (Debug)
+                isAdmin = true;
+                completeUnlock();
+                showAdminControls();
+                initDebugMode();
+            } else {
+                // ERROR
+                err.style.opacity = 1;
+                setTimeout(() => err.style.opacity = 0, 2000);
+            }
+        }
+
+        function completeUnlock() {
+            const screen = document.getElementById('lockScreen');
+            screen.style.opacity = 0;
+            setTimeout(() => {
+                screen.style.display = 'none';
+                initApp();
+            }, 500);
+        }
+
+        function showAdminControls() {
+            document.getElementById('debugBar').style.display = 'flex';
+        }
+
+        function initApp() {
+            // If User Mode, try to find today's date in schedule
+            if (!isAdmin) {
+                const today = new Date();
+                // Format YYYY/MM/DD to match data
+                const y = today.getFullYear();
+                const m = String(today.getMonth() + 1).padStart(2, '0');
+                const d = String(today.getDate()).padStart(2, '0');
+                const todayStr = `${y}/${m}/${d}`;
+
+                const foundIndex = scheduleData.findIndex(d => d.dateStr === todayStr);
+                if (foundIndex !== -1) {
+                    selectedDayIndex = foundIndex;
+                } else {
+                    // Default to Day 0 if out of range
+                    selectedDayIndex = 0; 
+                }
+            }
             renderNav();
             renderTimeline();
+        }
+
+        // --- Clock Logic ---
+
+        function startRealTimeClock() {
+            document.getElementById('liveBadge').style.display = 'flex';
+            updateRealTime(); // Run immediately
+            timerInterval = setInterval(updateRealTime, 60000); // Update every minute
+        }
+
+        function updateRealTime() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2,'0');
+            const m = String(now.getMinutes()).padStart(2,'0');
+            document.getElementById('currentTimeStr').textContent = `${h}:${m}`;
             
-            // Debug Slider Event
-            document.getElementById('timeSlider').addEventListener('input', (e) => {
+            // Check if day changed while app is open
+            // (Simple implementation: just re-render timeline to update locks)
+            renderTimeline();
+        }
+
+        function initDebugMode() {
+            // Admin slider listener
+            const slider = document.getElementById('timeSlider');
+            slider.addEventListener('input', (e) => {
                 debugTimeMinutes = parseInt(e.target.value);
-                updateDebugDisplay();
-                renderTimeline(); // Re-render on time change
+                document.getElementById('debugTimeDisplay').textContent = formatTime(debugTimeMinutes);
+                renderTimeline();
             });
         }
+
+        // --- Rendering ---
 
         function renderNav() {
             const nav = document.getElementById('dayNav');
@@ -500,7 +605,7 @@
             scheduleData.forEach((day, index) => {
                 const chip = document.createElement('div');
                 chip.className = `day-chip ${index === selectedDayIndex ? 'active' : ''}`;
-                chip.innerHTML = `<span class="date">${day.date}</span>${day.dayName}`;
+                chip.innerHTML = `<span class="date">${day.dayDisp}</span>${day.dayName}`;
                 chip.onclick = () => {
                     selectedDayIndex = index;
                     renderNav();
@@ -522,16 +627,28 @@
             heading.textContent = day.title;
             container.appendChild(heading);
 
-            if(!day.events || day.events.length === 0) {
-                container.innerHTML += `<div style="text-align:center; color:#888; padding:20px;">No events planned.</div>`;
-                return;
+            // Determine "Current Time" for logic
+            let currentMinutes;
+            if (isAdmin) {
+                currentMinutes = debugTimeMinutes;
+            } else {
+                const now = new Date();
+                currentMinutes = now.getHours() * 60 + now.getMinutes();
+                
+                // If the selected day is in the future compared to real date, lock all
+                // If selected day is past, unlock all
+                // If selected day is TODAY, use current time
+                const todayStr = getTodayStr();
+                if (day.dateStr > todayStr) currentMinutes = -9999; // Future: Lock all
+                else if (day.dateStr < todayStr) currentMinutes = 9999; // Past: Unlock all
+                // else: it is today, use currentMinutes
             }
 
             day.events.forEach(evt => {
                 const startMins = getMinutes(evt.time);
-                // Check Lock Status
-                const revealThreshold = evt.revealTime !== undefined ? evt.revealTime : (startMins - UNLOCK_OFFSET);
-                const isUnlocked = debugTimeMinutes >= revealThreshold;
+                // Unlock check
+                // If admin, simple check. If user, ensure date matches or is past
+                const isUnlocked = currentMinutes >= (startMins - UNLOCK_OFFSET);
 
                 const card = document.createElement('div');
                 card.className = `event-card ${isUnlocked ? '' : 'locked'}`;
@@ -542,7 +659,6 @@
                 }
                 card.dataset.locked = !isUnlocked;
 
-                // Determine Display Content
                 const dTitle = isUnlocked ? evt.title : (evt.secretTitle || "Secret Activity");
                 const dIcon = isUnlocked ? evt.icon : "🔒";
                 const dDesc = isUnlocked ? evt.desc : "Wait for it...";
@@ -565,12 +681,11 @@
 
                 card.onclick = () => {
                     if(!isUnlocked) {
-                        alert(`🔒 Locked! Reveals at ${formatTime(revealThreshold)}`);
+                        alert(`🔒 Locked! Reveals at ${formatTime(startMins - UNLOCK_OFFSET)}`);
                     } else {
-                        openModal(evt, day.date);
+                        openModal(evt, day.dateStr);
                     }
                 };
-
                 container.appendChild(card);
             });
         }
@@ -590,13 +705,16 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         }
 
-        function updateDebugDisplay() {
-            document.getElementById('debugTimeDisplay').textContent = formatTime(debugTimeMinutes);
+        function getTodayStr() {
+            const today = new Date();
+            const y = today.getFullYear();
+            const m = String(today.getMonth() + 1).padStart(2, '0');
+            const d = String(today.getDate()).padStart(2, '0');
+            return `${y}/${m}/${d}`;
         }
 
         // --- Modal ---
         const modal = document.getElementById('modal');
-        
         function openModal(evt, dateStr) {
             document.getElementById('mIcon').textContent = evt.icon;
             document.getElementById('mTitle').textContent = evt.title;
@@ -605,25 +723,16 @@
             document.getElementById('mLoc').textContent = evt.loc || 'Unknown';
             document.getElementById('mCost').textContent = evt.cost || '-';
             document.getElementById('mNote').textContent = "Tap 'Open Map' to see location.";
-            
-            // Map Link
             const q = encodeURIComponent(evt.loc);
             document.getElementById('mMapBtn').href = `https://www.google.com/maps/search/?api=1&query=${q}`;
-
             modal.classList.add('active');
         }
-
         function closeModal() {
             modal.classList.remove('active');
         }
-
-        // Close when clicking outside sheet
         modal.addEventListener('click', (e) => {
             if(e.target === modal) closeModal();
         });
-
-        // Start
-        init();
 
     </script>
 </body>
