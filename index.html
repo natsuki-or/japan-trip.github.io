@@ -85,43 +85,26 @@
         .btn-close { background: #eee; color: var(--text); }
         
         /* List & Phrase */
-        .list-group-header { 
-            font-size: 1.1rem; font-weight: 800; margin: 30px 0 10px 0; 
-            padding-bottom: 5px; border-bottom: 3px solid var(--primary); 
-            color: var(--text);
-        }
-        .list-category-header {
-            font-size: 0.9rem; font-weight: bold; margin: 15px 0 5px 0; 
-            color: var(--gray); text-transform: uppercase; letter-spacing: 1px;
-            padding-left: 5px;
-        }
+        .list-group-header { font-size: 1.1rem; font-weight: 800; margin: 30px 0 10px 0; padding-bottom: 5px; border-bottom: 3px solid var(--primary); color: var(--text); }
+        .list-category-header { font-size: 0.9rem; font-weight: bold; margin: 15px 0 5px 0; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; padding-left: 5px; }
         .checklist-item { display: flex; align-items: center; padding: 10px 5px; border-bottom: 1px solid #f0f0f0; }
         .checklist-item input[type="checkbox"] { transform: scale(1.3); margin-right: 15px; accent-color: var(--primary); }
         .checklist-item.checked span { text-decoration: line-through; color: #ccc; }
-        
         .phrase-item { margin-bottom: 15px; background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
         .phrase-jp { color: var(--text); font-size: 1.8rem; display: block; margin: 5px 0; font-weight: 800; }
-        
-        /* Debug */
         .debug-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #222; color: white; padding: 10px; z-index: 3000; font-size: 0.8rem; display: none; flex-direction: column; align-items: center; }
         .slider-row { display: flex; width: 100%; gap: 10px; align-items: center; margin-top: 5px; }
         input[type="range"] { flex: 1; }
         .hide-debug { position: absolute; right: 10px; top: 5px; color: #aaa; cursor: pointer; }
-        
-        /* Loading */
         #loading { text-align: center; padding: 20px; color: #888; }
+        .searching-badge { font-size: 0.7rem; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; color: #888; display: inline-block; margin-top: 2px; }
         
-        /* Searching Indicator */
-        .searching-badge {
-            font-size: 0.7rem; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; color: #888; display: inline-block; margin-top: 2px;
-        }
+        .test-mode-badge { display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #ffeb3b; color: #333; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; z-index: 101; pointer-events: none; opacity: 0.8; }
     </style>
-
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
-
     <div id="lockScreen">
         <div class="lock-content">
             <div class="lock-icon">🔒</div>
@@ -132,7 +115,6 @@
             <div id="errorMsg" class="error-msg">Incorrect Passcode</div>
         </div>
     </div>
-
     <div class="debug-bar" id="debugBar">
         <div class="hide-debug" onclick="document.getElementById('debugBar').style.display='none'">✕</div>
         <div id="debugInfo">🕹 Admin Mode</div>
@@ -142,7 +124,6 @@
             <span id="debugTimeDisplay">06:00</span>
         </div>
     </div>
-
     <header>
         <div class="header-top">
             <div class="header-title">
@@ -150,9 +131,7 @@
                 <div class="subtitle">Mystery Tour</div>
             </div>
             <div class="header-actions">
-                <div id="liveBadge" class="live-badge" style="display:none;">
-                    <div class="live-dot"></div><span id="currentTimeStr">--:--</span>
-                </div>
+                <div id="liveBadge" class="live-badge" style="display:none;"><div class="live-dot"></div><span id="currentTimeStr">--:--</span></div>
                 <div class="icon-btn" onclick="openPackingList()">🧳</div>
                 <div class="icon-btn" onclick="openPhrasebook()">🀄️</div>
             </div>
@@ -160,17 +139,10 @@
         <div id="mapContainer"></div>
         <div class="day-nav" id="dayNav"></div>
     </header>
-
-    <div class="timeline-container" id="timeline">
-        <div id="loading">Loading Schedule...</div>
-    </div>
-
+    <div class="timeline-container" id="timeline"><div id="loading">Loading Schedule...</div></div>
     <div class="modal-overlay" id="modal">
         <div class="modal-sheet">
-            <div class="modal-header">
-                <div class="modal-icon" id="mIcon"></div>
-                <div><div class="modal-title" id="mTitle"></div><span class="modal-time" id="mTime"></span></div>
-            </div>
+            <div class="modal-header"><div class="modal-icon" id="mIcon"></div><div><div class="modal-title" id="mTitle"></div><span class="modal-time" id="mTime"></span></div></div>
             <div class="modal-body" id="mDesc"></div>
             <div class="modal-meta">
                 <div class="meta-row"><span>📍 Location</span><span id="mLoc" style="font-weight:bold"></span></div>
@@ -178,27 +150,14 @@
                 <div class="meta-row" style="border:none; padding-top:5px;"><span>📝 Note</span></div>
                 <div id="mNote" style="font-style:italic;"></div>
             </div>
-            <div class="btn-group">
-                <div class="btn btn-close" onclick="closeModal('modal')">Close</div>
-                <a href="#" id="mMapBtn" target="_blank" class="btn btn-map">Google Maps ↗</a>
-            </div>
+            <div class="btn-group"><div class="btn btn-close" onclick="closeModal('modal')">Close</div><a href="#" id="mMapBtn" target="_blank" class="btn btn-map">Google Maps ↗</a></div>
         </div>
     </div>
-
     <div class="modal-overlay" id="packingModal">
-        <div class="modal-sheet">
-            <h2 style="margin-top:0;">🧳 Checklist</h2>
-            <div id="packingListContainer">Loading...</div>
-            <div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('packingModal')">Close</div>
-        </div>
+        <div class="modal-sheet"><h2 style="margin-top:0;">🧳 Checklist</h2><div id="packingListContainer">Loading...</div><div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('packingModal')">Close</div></div>
     </div>
-
     <div class="modal-overlay" id="phraseModal">
-        <div class="modal-sheet">
-            <h2 style="margin-top:0;">🀄️ Kanji Cards</h2>
-            <div id="phraseContainer">Loading...</div>
-            <div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('phraseModal')">Close</div>
-        </div>
+        <div class="modal-sheet"><h2 style="margin-top:0;">🀄️ Kanji Cards</h2><div id="phraseContainer">Loading...</div><div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('phraseModal')">Close</div></div>
     </div>
 
     <script>
@@ -207,13 +166,10 @@
         // ==========================================
         const PASS_USER = "japan2026"; 
         const PASS_ADMIN = "admin";
-        
-        // 🚨 TEST MODE OFF: Set to false for production
-        const IS_TEST_MODE = false; 
+        const IS_TEST_MODE = false; // 🚨 MUST BE FALSE FOR PRODUCTION
         const TEST_TODAY_DATE = "2026/04/26"; 
-
         const TRIP_START_DATE = new Date("2026-04-25T12:35:00"); 
-        const UNLOCK_OFFSET = 120; // 2 hours
+        const UNLOCK_OFFSET = 120; 
         const CSV_FILE = "schedule.csv"; 
         const PACKING_FILE = "packing.csv";
         const PHRASE_FILE = "phrases.csv";
@@ -236,6 +192,7 @@
             if(IS_TEST_MODE) {
                 const badge = document.createElement("div");
                 badge.className = "test-mode-badge";
+                badge.style.display = "block";
                 badge.innerText = "TEST MODE: " + TEST_TODAY_DATE;
                 document.body.appendChild(badge);
             }
@@ -259,7 +216,7 @@
             Papa.parse(CSV_FILE, {
                 download: true, header: true, skipEmptyLines: true,
                 complete: function(results) { processCSVData(results.data); },
-                error: function(err) { console.error(err); document.getElementById('timeline').innerHTML = "Error loading schedule.csv<br>Make sure the file exists and has headers."; }
+                error: function(err) { console.error(err); document.getElementById('timeline').innerHTML = "Error loading schedule.csv"; }
             });
         }
 
@@ -269,9 +226,9 @@
             let lastDateKey = null;
 
             rawData.forEach((row, i) => {
-                // Ignore rows explicitly marked FALSE, otherwise SHOW
-                const showVal = row["Show"] || "";
-                if(showVal.toUpperCase() === "FALSE") return;
+                // FIXED: Default to TRUE (Show). Only hide if "FALSE".
+                const showVal = (row["Show"] || "").trim().toUpperCase();
+                if(showVal === "FALSE") return;
 
                 let dateRaw = row["Date"];
                 if(!dateRaw && lastDateKey) dateRaw = lastDateKey;
@@ -286,7 +243,7 @@
                         dateStr: dateKey,
                         dayDisp: dateRaw.split(' ')[0], 
                         dayName: dateRaw.split(' ')[1] || '',
-                        title: `Day ${Object.keys(grouped).length}`, // 0-based day
+                        title: `Day ${Object.keys(grouped).length}`,
                         events: []
                     };
                     days.push(grouped[dateKey]);
@@ -300,7 +257,6 @@
                     if(match) coords = [parseFloat(match[1]), parseFloat(match[2])];
                 }
 
-                // Title Logic: EnglishTitle > Title > "Activity"
                 const displayTitle = row["EnglishTitle"] ? row["EnglishTitle"] : (row["Itinerary/ Activity"] || row["Title"] || "Activity");
 
                 const evt = {
@@ -324,11 +280,12 @@
 
             scheduleData = days;
             
-            // Initial Day Selection (FIXED VARIABLE NAME)
+            // Initial Day Selection (FIXED: Date Object Comparison)
             if (!isAdmin) {
-                const today = getTodayStr(); // Corrected Variable name
-                const foundIndex = scheduleData.findIndex(d => d.dateStr === today); // Use 'today' here
-                // If today is found, use it. If not (e.g. 2025), default to 0.
+                const todayObj = new Date();
+                // Find closest day or default to 0
+                const todayStr = getTodayStr(); // Using string for lookup is fine if formatted correctly
+                const foundIndex = scheduleData.findIndex(d => d.dateStr === todayStr);
                 selectedDayIndex = (foundIndex !== -1) ? foundIndex : 0;
             }
 
@@ -336,7 +293,6 @@
             runAutoGeocoding();
         }
 
-        // --- Other CSV Fetchers (Same as before) ---
         function fetchPackingCSV() { Papa.parse(PACKING_FILE, { download: true, header: true, skipEmptyLines: true, complete: function(results) { renderPackingList(results.data); } }); }
         function fetchPhrasesCSV() { Papa.parse(PHRASE_FILE, { download: true, header: true, skipEmptyLines: true, complete: function(results) { renderPhrasebook(results.data); } }); }
 
@@ -382,7 +338,6 @@
             });
         }
 
-        // --- Core Logic ---
         async function runAutoGeocoding() {
             const queue = [];
             scheduleData.forEach(day => { day.events.forEach(evt => { if(evt.needsGeocoding) { if(geoCache[evt.loc]) { evt.coords = geoCache[evt.loc]; evt.needsGeocoding = false; } else { queue.push(evt); } } }); });
@@ -447,26 +402,45 @@
             
             const day = scheduleData[selectedDayIndex];
             
-            // --- TIME LOGIC (REAL vs ADMIN vs TEST) ---
+            // --- UPDATED TIME LOGIC: DATE OBJECT COMPARISON ---
             let currentMinutes;
+            
+            // 1. Get "Target Date" (Real today or Fake today)
+            let targetDateObj;
+            if (IS_TEST_MODE) {
+                targetDateObj = new Date(TEST_TODAY_DATE); // Force Test Date
+            } else {
+                targetDateObj = new Date(); // Real Today (e.g. Feb 2025)
+            }
+            
+            // 2. Parse Trip Day Date
+            const tripDateObj = new Date(day.dateStr); 
+
+            // 3. Compare Dates (Reset hours for clean day comparison)
+            const targetMidnight = new Date(targetDateObj.getFullYear(), targetDateObj.getMonth(), targetDateObj.getDate());
+            const tripMidnight = new Date(tripDateObj.getFullYear(), tripDateObj.getMonth(), tripDateObj.getDate());
+
             if (isAdmin) {
                 currentMinutes = debugTimeMinutes;
-            } else if (IS_TEST_MODE) {
-                // In Test Mode, compare selected day with "Fake Today"
-                if (day.dateStr > TEST_TODAY_DATE) currentMinutes = -9999;
-                else if (day.dateStr < TEST_TODAY_DATE) currentMinutes = 9999;
-                else {
-                    // If selected day IS fake today, use REAL time of day
-                    const now = new Date();
-                    currentMinutes = now.getHours() * 60 + now.getMinutes();
-                }
             } else {
-                // Real Production Mode
-                const now = new Date();
-                currentMinutes = now.getHours() * 60 + now.getMinutes();
-                const todayStr = getTodayStr();
-                if (day.dateStr > todayStr) currentMinutes = -9999; 
-                else if (day.dateStr < todayStr) currentMinutes = 9999; 
+                if (tripMidnight > targetMidnight) {
+                    // Future Date -> LOCK ALL
+                    currentMinutes = -9999;
+                } else if (tripMidnight < targetMidnight) {
+                    // Past Date -> UNLOCK ALL
+                    currentMinutes = 9999;
+                } else {
+                    // Same Day -> Use Real Time
+                    if (IS_TEST_MODE) {
+                        // If testing, assume it's noon or specific time? Or just real time on that fake day?
+                        // Let's use real clock time on the fake day
+                        const now = new Date();
+                        currentMinutes = now.getHours() * 60 + now.getMinutes();
+                    } else {
+                        const now = new Date();
+                        currentMinutes = now.getHours() * 60 + now.getMinutes();
+                    }
+                }
             }
 
             updateMap(day, currentMinutes);
@@ -491,7 +465,6 @@
             });
         }
 
-        // --- Helpers ---
         function updateCountdown() {
             const now = new Date(); const diffTime = TRIP_START_DATE - now; const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             const el = document.getElementById('countdown'); if(el) { if (diffDays > 0) el.innerText = `T-Minus ${diffDays} Days`; else el.innerText = "Trip Completed"; }
