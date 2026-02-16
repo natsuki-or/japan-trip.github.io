@@ -265,6 +265,12 @@
             let lastDateKey = null;
 
             rawData.forEach((row, i) => {
+                // 1. Check "Show" column. If FALSE or Empty, skip this row.
+                // Assuming column name is "Show" (case insensitive)
+                const showVal = row["Show"] || "";
+                if(showVal.toUpperCase() !== "TRUE") return;
+
+                // Date Handling
                 let dateRaw = row["Date"];
                 if(!dateRaw && lastDateKey) dateRaw = lastDateKey;
                 if(!dateRaw) return;
@@ -293,11 +299,14 @@
                     if(match) coords = [parseFloat(match[1]), parseFloat(match[2])];
                 }
 
+                // DETERMINE TITLE: Use EnglishTitle if available, else Japanese "Itinerary/ Activity"
+                const displayTitle = row["EnglishTitle"] ? row["EnglishTitle"] : (row["Itinerary/ Activity"] || "Activity");
+
                 const evt = {
                     id: `evt_${i}`,
                     time: row["Departure time"] || "",
                     end: row["Arrival time"] || "",
-                    title: row["Itinerary/ Activity"] || "Activity",
+                    title: displayTitle,  // Modified to use EnglishTitle
                     secretTitle: row["SecretTitle"], 
                     icon: row["Icon"] || "📍",
                     desc: row["note"] || row["category"] || "",
@@ -353,14 +362,12 @@
             const savedState = JSON.parse(localStorage.getItem('japanPackingList')) || {};
 
             Object.keys(grouped).forEach(grpName => {
-                // Group Header
                 const grpHeader = document.createElement('div');
                 grpHeader.className = 'list-group-header';
                 grpHeader.textContent = grpName;
                 container.appendChild(grpHeader);
 
                 Object.keys(grouped[grpName]).forEach(catName => {
-                    // Category Header (if exists)
                     if(catName) {
                         const catHeader = document.createElement('div');
                         catHeader.className = 'list-category-header';
@@ -368,7 +375,6 @@
                         container.appendChild(catHeader);
                     }
 
-                    // Items
                     grouped[grpName][catName].forEach(item => {
                         const row = document.createElement('label'); row.className = 'checklist-item';
                         const checkbox = document.createElement('input'); checkbox.type = 'checkbox';
@@ -516,7 +522,7 @@
             container.innerHTML = '';
             
             if(scheduleData.length === 0) {
-                container.innerHTML = "<div style='text-align:center; margin-top:20px;'></div>";
+                container.innerHTML = "<div style='text-align:center; margin-top:20px;'>No Schedule Data</div>";
                 return;
             }
 
