@@ -1,6 +1,6 @@
 Day,Date,Departure time,Arrival time,Itinerary/ Activity,category,cost,note,url,Location,Booking,EnglishTitle,SecretTitle,Icon,Lat,Lng,IgnoreMap,Show
 0,4月25日  土,12:35,,LGW-NRT (Vienna経由),Flight,,機内泊,,,,LGW-NRT (via Vienna),Flight to ???,✈️,51.1537,-0.1821,TRUE,TRUE
-1,4月26日  日,,8:50,NRT 到着,Flight,,,,"https://www.google.com/maps/place/%E6%88%90%E7%94%B0%E5%9B%BD%E9%9A%9B%E7%A9%BA%E6%B8%AF/@35.769769,140.387566,15z/data=!3m1!4b1!4m6!3m5!1s0x6022f379d1bd3757:0xd56e29a162771aa1!8m2!3d35.770178!4d140.3843215!16zL20vMDFsazZo?authuser=0&entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D",,Arrival at NRT,,🛬,35.7719,140.3928,TRUE,TRUE
+1,4月26日  日,8:50,,NRT 到着,Flight,,,,"https://www.google.com/maps/place/%E6%88%90%E7%94%B0%E5%9B%BD%E9%9A%9B%E7%A9%BA%E6%B8%AF/@35.769769,140.387566,15z/data=!3m1!4b1!4m6!3m5!1s0x6022f379d1bd3757:0xd56e29a162771aa1!8m2!3d35.770178!4d140.3843215!16zL20vMDFsazZo?authuser=0&entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D",,Arrival at NRT,,🛬,35.7719,140.3928,TRUE,TRUE
 東京1日目,,9:42,10:30,移動,Transport,2790,スカイライナー8号,,,,Transfer,,🚄,35.7141,139.7741,,TRUE
 ,,10:30,11:30,根津神社 つつじ苑,Sightseeing/ Activity,500,つつじ苑,https://nedujinja.or.jp/tsutsuji/,"https://www.google.com/maps/place/%E6%A0%B9%E6%B4%A5%E7%A5%9E%E7%A4%BE+%E3%81%A4%E3%81%A4%E3%81%98%E8%8B%91/@35.7195574,139.760504,17z/data=!3m1!4b1!4m6!3m5!1s0x60188c32d987a58f:0xedbbbab47b5044ba!8m2!3d35.7195574!4d139.760504!16s%2Fg%2F11g69_rtr9?authuser=0&entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D",,Nezu Shrine Azalea Garden,Azalea Garden,⛩,35.7202,139.7607,,TRUE
 ,,11:30,12:30,お昼,Food,1500,蕎心・手打ちそば 根津 鷹匠,,,,Lunch,,🍜,35.7215,139.76,,TRUE
@@ -19,7 +19,7 @@ Day,Date,Departure time,Arrival time,Itinerary/ Activity,category,cost,note,url,
 ,,12:30,13:30,お昼ご飯,Food,1500,,,,,Lunch,Mystery Lunch,🍽,,,,TRUE
 ,,13:30,16:00,八甲田スキー,Sightseeing/ Activity,17500,スキー・雪の回廊,https://www.hakkouda-p.com/cn21/pg110.html,"https://www.google.com/maps/place/%E5%85%AB%E7%94%B2%E7%94%B0%E5%9B%BD%E9%9A%9B%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4/@40.6793611,140.8326515,17z/data=!3m1!4b1!4m6!3m5!1s0x5f9b0da65d0479db:0xcec462517153bb57!8m2!3d40.6793611!4d140.8326515!16s%2Fg%2F1tdhdvb1?authuser=0&entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D",,Hakkoda Skiing,Snow Corridor,🎿,40.6628,140.8354,,TRUE
 ,,16:00,17:00,酸ヶ湯温泉,Sightseeing/ Activity,1000,千人風呂,https://sukayu.jp/,"https://www.google.com/maps/place/%E9%85%B8%E3%83%B6%E6%B9%AF%E6%B8%A9%E6%B3%89+%E5%A4%A7%E6%B5%B4%E5%A0%B4%E3%83%92%E3%83%90%E5%8D%83%E4%BA%BA%E9%A2%A8%E5%91%82/@40.6492663,140.8495882,17z/data=!4m10!1m2!2m1!1z6YW444O25rmv5rip5rOJ!3m6!1s0x5f9b13c22fb4935d:0xe0472daba159a1aa!8m2!3d40.6500982!4d140.8508842!15sCg_phbjjg7bmua_muKnms4mSAQ1kYXlfdXNlX29uc2Vu4AEA!16s%2Fg%2F11j4py_c1n?authuser=0&entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D",,Sukayu Onsen,1000 Person Bath,♨️,40.6455,140.8444,,TRUE
-,,,19:00,レンタカー青森市内で返却,Transport,,,,,,Return Rental Car in Aomori City,,,,,,TRUE
+,,19:00,,レンタカー青森市内で返却,Transport,,,,,,Return Rental Car in Aomori City,,,,,,TRUE
 ,,,,夕食,Food,3000,ホタテ・海鮮,,,,Dinner,Scallop Feast,🐚,40.8244,140.74,,
 ,,,18:00,青森市内泊,Accommodation,9000,リッチモンドホテル青森・洗濯可,https://travel.rakuten.co.jp/HOTEL/80726/80726.html?scid=mi_trv_conf_dhbook_002,,,Stay in Aomori City,,,,,,TRUE
 3,4月28日  火,6:45,7:15,青森駅からAOJに移動,Transport,1125,ジャンボタクシーの方がバスより安い,https://hk-grp.or.jp/publics/index/1024/detail=1/b_id=7160/r_id=139/,"https://www.google.com/maps/place/%E9%9D%92%E6%A3%AE%E7%A9%BA%E6%B8%AF/@40.7354587,140.6904126,17z/data=!3m1!4b1!4m6!3m5!1s0x5f9b0a1878ec3c11:0x79e8883362d48133!8m2!3d40.7354587!4d140.6904126!16s%2Fm%2F02pkvfh?authuser=0&entry=ttu&g_ep=EgoyMDI2MDIxMC4wIKXMDSoASAFQAw%3D%3D",,Taxi from Aomori Station to AOJ,,,,,,TRUE
@@ -64,9 +64,9 @@ or 前日に白川郷,,,,地震体験？,,,,,,,Earthquake Simulator?,,,,,,
 ,,,,お昼,Food,1000,,,,,Lunch,,,,,,
 ,,17:30,19:00,渋谷スカイ,Sightseeing/ Activity,3400,展望台,https://www.shibuya-scramble-square.com/sky/ticket/,,2週間前に予約開始,Shibuya Sky,,,,,,TRUE
 ,,19:30,,附小と夕飯？,Food,5000,,,,,Dinner with Friends?,,,,,,TRUE
-,,,20:30,都立大,Accommodation,0,,,,,Toritsudai,,,,,,TRUE
-7,5月2日  土,,,伊東？,Sightseeing/ Activity,,秋葉原・銀座など,,,,Ito?,,,,,,
-,,11:49,11:59,都立大学ー渋谷,Transport,180,,,,,Toritsu-daigaku - Shibuya,,,,,,TRUE
+,,20:30,,都立大,Accommodation,0,,,,,Toritsudai,,,,,,TRUE
+7,5月2日  土,11:49,11:59,都立大学ー渋谷,Transport,180,,,,,Toritsu-daigaku - Shibuya,,,,,,TRUE
+,,,,,,,,,,,,,,,,,
 伊東市？,,12:30,14:16,渋谷ー伊東,"Transport, Sightseeing/ Activity",7000,サフィール踊り子1号、個室取れたらベスト,https://www.jreast.co.jp/saphir/,,,Shibuya - Ito,Luxury Train,🚋,35.658,139.7016,TRUE,TRUE
 ,,,,,Food,6000,,,,,,,,,,,
 ,,,,音無の森緑風園,,1200,露天風呂,,https://maps.app.goo.gl/gXKbyggvvTLeAxe5A,,Otonashi no Mori Ryokufuen,,,,,,
@@ -81,27 +81,27 @@ Joss到着,,,,わさび農園？,,,,https://izu-wasavc.city.izu.shizuoka.jp/,,,W
 ,,,,,Food,,,,,,,,,,,,
 夜大阪移動,,19:39,22:06,東京ー大阪,Transport,10000,新幹線,,,,Tokyo - Osaka,,,,,,TRUE
 ,,,,大阪泊,Accommodation,10000,洗濯可,,,,Stay in Osaka,,,,,,
-9,5月4日  月,,,,,,,,,,,,,,,,
-大阪+吉野古道,,7:00,8:30,中央市場 (ヱンドウ寿司),Food,4000,朝寿司 (要予約/早起き),,,,Central Market (Endo Sushi),Market Breakfast,🍣,34.685,135.48,TRUE,TRUE
+9,5月4日  月,7:00,8:30,中央市場 (ヱンドウ寿司),Food,4000,朝寿司 (要予約/早起き),,,,Central Market (Endo Sushi),Market Breakfast,🍣,34.685,135.48,TRUE,TRUE
+大阪+吉野古道,,,,,,,,,,,,,,,,,
 ,,9:00,10:00,難波八阪神社・道頓堀(無人),Sightseeing/ Activity,,写真撮影タイム,,,,Namba Yasaka Shrine / Dotonbori (Empty),,,,,,TRUE
 ,,10:10,10:46,大阪阿部野橋ー橿原神宮前,"Transport, Sightseeing/ Activity",1280,ブルーシンフォニー 1便,https://www.kintetsu.co.jp/senden/blue_symphony/,,ご乗車日1ヶ月前の10:30から購入可能,Osaka Abenobashi - Kashiharajingu-mae,Vintage Train,🚃,34.6457,135.5135,TRUE,TRUE
 ,,11:00,12:00,レンタカーで吉野へ,Transport,16000,ニコニコレンタカー橿原神宮前店,https://www.2525r.com/search/railway-3100217.html,,,Rent-a-car to Yoshino,,,,,,TRUE
 ,,,,お昼,Food,,,,,,Lunch,,,,,,
 ,,13:00,16:30,大峰山寺short ver.,Sightseeing/ Activity,,,https://yamap.com/plans/code/0E6wQXF7CgtKSFuYqC0UgAXoMJEvqsgbZHvDKZwSim26u5GhvHMDvFe8svuM82jFuc4,,,Mt. Omine (Short Ver.),Men's Trail,⛰,34.2541,135.9161,,TRUE
-,,,17:00,山上ヶ岳 櫻本坊参籠所,"Accommodation, Food",12000,精進料理・風呂あり・朝夕食,https://ohminesan-ryusenji.or.jp/stay/,https://maps.app.goo.gl/MbcdubpP7nY68cnv6,電話,Sanjogatake Sakuramotobo Lodging,Shukubo Stay,🛌,34.3592,135.8622,,TRUE
-10,5月5日  火,,,,,,,,,,,,,,,,
-吉野古道,,8:00,11:00,下山 (洞川温泉方面へ),Sightseeing/ Activity,,下り坂,,,,Descent (towards Dorogawa Onsen),,,,,,TRUE
+,,17:00,,山上ヶ岳 櫻本坊参籠所,"Accommodation, Food",12000,精進料理・風呂あり・朝夕食,https://ohminesan-ryusenji.or.jp/stay/,https://maps.app.goo.gl/MbcdubpP7nY68cnv6,電話,Sanjogatake Sakuramotobo Lodging,Shukubo Stay,🛌,34.3592,135.8622,,TRUE
+10,5月5日  火,8:00,11:00,下山 (洞川温泉方面へ),Sightseeing/ Activity,,下り坂,,,,Descent (towards Dorogawa Onsen),,,,,,TRUE
+吉野古道,,,,,,,,,,,,,,,,,
 ,,11:00,13:00,鮎料理,Food,1500,亀清,https://tabelog.com/nara/A2905/A290503/29009005/,,,Ayu Fish Cuisine,,,,,,TRUE
 ,,13:00,14:00,洞川温泉,Sightseeing/ Activity,900,温泉で回復,https://kadojin.com/dayspa,https://maps.app.goo.gl/UFNRj2dYM9xLShkJ7,予約必要なし,Dorogawa Onsen,Recovery Bath,♨️,34.2704,135.8856,,TRUE
 ,,,,レンタカーで大阪に戻る,,,,,,,Return Rental Car to Osaka,,🚌,,,,
 ,,,,夕飯,Food,3000,,,,,Dinner,,,,,,
 ,,22:00,,オレンジフェリー(大阪ー東予港),"Transport, Accommodation",13000,デラックスシングル(個室),https://www.orange-ferry.co.jp ,,2か月前の同日から受付,Orange Ferry (Osaka - Toyo Port),Overnight Ship,🚢,34.612,135.423,,TRUE
-11,5月6日  水,,6:00,,,,,,,,,,,,,,TRUE
-しまなみ,,6:20,7:03,東予港ー今治駅,Transport,,,https://www.orange-ferry.co.jp/platform-guidance-shuttle-bus/kansai/toyo-osaka/shikoku-shuttle-bus.html,,,Toyo Port - Imabari Station,,⚓️,33.9186,133.056,TRUE,TRUE
+11,5月6日  水,6:20,7:03,東予港ー今治駅,Transport,,,https://www.orange-ferry.co.jp/platform-guidance-shuttle-bus/kansai/toyo-osaka/shikoku-shuttle-bus.html,,,Toyo Port - Imabari Station,,⚓️,33.9186,133.056,TRUE,TRUE
+しまなみ,,,,,,,,,,,,,,,,,
 ,,,,朝ごはん,Food,800,焼豚玉子飯,https://www.city.imabari.ehime.jp/kanko/pamphlet/yakibuta/yakibuta.pdf?1,,,Breakfast,,🍳,,,,
 ,,10:30,,レンタサイクル手続き,Sightseeing/ Activity,6000,"クロスバイク手配 (giant 11,220-15,180)",https://shimanami-cycle.or.jp ,,60日前から予約開始,Rent-a-cycle Registration,,🚴,34.0662,132.9977,,TRUE
 ,,13:00,15:30,しまなみ海道サイクリング Day2,Sightseeing/ Activity,,今治→大島→伯方島→大三島,,,,Shimanami Kaido Cycling Day 2,,🚴,,,,TRUE
-,,,18:30,大三島で宿泊,"Accommodation, Food",10890,夕食・朝食付き・洗濯可,https://www.oomishima.co.jp/plan-01.html,https://maps.app.goo.gl/Pf3X9y6kkCba66pU9,電話,Stay in Omishima,,🏠,34.2492,133.0125,,TRUE
+,,18:30,,大三島で宿泊,"Accommodation, Food",10890,夕食・朝食付き・洗濯可,https://www.oomishima.co.jp/plan-01.html,https://maps.app.goo.gl/Pf3X9y6kkCba66pU9,電話,Stay in Omishima,,🏠,34.2492,133.0125,,TRUE
 12,5月7日  木,8:30,9:00,宿→宗方港(大三島)へ移動,Sightseeing/ Activity,,自転車で移動,,,,Transfer to Munakata Port (Omishima),,🚴,,,,TRUE
 ,,9:05,9:28,フェリー (宗方→岡村),Transport,500,とびしま海道へワープ,,,,Ferry (Munakata -> Okamura),Island Hop,⛴,34.2173,132.983,,TRUE
 ,,9:40,10:50,御手洗地区 散策,Sightseeing/ Activity,,レトロな町並み・写真撮影,,https://maps.app.goo.gl/FXURxvhbq4mMbsSE7,,Mitarai District Walk,Retro Town,🏘,34.1788,132.8687,,TRUE
@@ -111,9 +111,9 @@ Joss到着,,,,わさび農園？,,,,https://izu-wasavc.city.izu.shizuoka.jp/,,,W
 ,,,,,,,,,,,,,🏁,,,,
 ,,,,,,,,,,,,,🚃,,,,
 ,,,,夕飯,Food,3000,,,,,Dinner,,,,,,
-,,,19:00,厳島で宿泊,Accommodation,9360,厳島泊・洗濯可,https://miyajimamikuniya.com/,https://maps.app.goo.gl/9N1qR9KWjdDF9FAX8,,Stay in Miyajima,,⛩,34.298,132.322,,TRUE
-13,5月8日  金,,,,,,,,,,,,,,,,
-宮島・広島,,6:35,7:50,厳島神社 (早朝参拝),Sightseeing/ Activity,500,混雑回避,https://www.itsukushimajinja.jp/jp/admission.html,https://maps.app.goo.gl/Qd6jLTqFj9H1VZs7A,,Itsukushima Shrine (Early Morning),Early Morning,⛩,34.2976,132.3214,,TRUE
+,,19:00,,厳島で宿泊,Accommodation,9360,厳島泊・洗濯可,https://miyajimamikuniya.com/,https://maps.app.goo.gl/9N1qR9KWjdDF9FAX8,,Stay in Miyajima,,⛩,34.298,132.322,,TRUE
+13,5月8日  金,6:35,7:50,厳島神社 (早朝参拝),Sightseeing/ Activity,500,混雑回避,https://www.itsukushimajinja.jp/jp/admission.html,https://maps.app.goo.gl/Qd6jLTqFj9H1VZs7A,,Itsukushima Shrine (Early Morning),Early Morning,⛩,34.2976,132.3214,,TRUE
+宮島・広島,,,,,,,,,,,,,,,,,
 ,,7:55,8:05,宮島→宮島口,Transport,,,,,,Miyajima -> Miyajimaguchi,,,,,,TRUE
 ,,,,朝ごはん,Food,1500,一蘭？広島の方が東京より空いてれば？,,,,Breakfast,,,,,,
 ,,9:00,12:00,広島平和記念資料館・原爆ドーム,Sightseeing/ Activity,200,歴史学習,,https://maps.app.goo.gl/Uoa1F2BhouZicuan7,,Peace Memorial Museum / A-Bomb Dome,Museum & Dome,🕊,34.3929,132.4524,,TRUE
@@ -131,5 +131,5 @@ Joss到着,,,,わさび農園？,,,,https://izu-wasavc.city.izu.shizuoka.jp/,,,W
 ,,18:00,20:00,マグロマート,Food,5000,,,,,Maguro Mart,Tuna Feast,🐟,35.71,139.6644,,TRUE
 ,,,,,Accommodation,7000,,,,,,,,,,,
 ,,,,,Transport,,翌日のフライトに備える,,,,,,,,,,
-15,5月10日  日,,,,,,,,,,,,,,,,
+15,5月10日  日,6:50,8:30,都立大ーNRT,Transport,2955,,,,,To Airport,To Airport,,,,,TRUE
 ,,11:00,,NRT発 帰国,Flight,,Bye Bye Japan,,,,Fly Home,,🛫,35.7719,140.3928,,TRUE
