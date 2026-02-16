@@ -85,43 +85,27 @@
         .btn-close { background: #eee; color: var(--text); }
         
         /* List & Phrase */
-        .list-group-header { 
-            font-size: 1.1rem; font-weight: 800; margin: 30px 0 10px 0; 
-            padding-bottom: 5px; border-bottom: 3px solid var(--primary); 
-            color: var(--text);
-        }
-        .list-category-header {
-            font-size: 0.9rem; font-weight: bold; margin: 15px 0 5px 0; 
-            color: var(--gray); text-transform: uppercase; letter-spacing: 1px;
-            padding-left: 5px;
-        }
+        .list-group-header { font-size: 1.1rem; font-weight: 800; margin: 30px 0 10px 0; padding-bottom: 5px; border-bottom: 3px solid var(--primary); color: var(--text); }
+        .list-category-header { font-size: 0.9rem; font-weight: bold; margin: 15px 0 5px 0; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; padding-left: 5px; }
         .checklist-item { display: flex; align-items: center; padding: 10px 5px; border-bottom: 1px solid #f0f0f0; }
         .checklist-item input[type="checkbox"] { transform: scale(1.3); margin-right: 15px; accent-color: var(--primary); }
         .checklist-item.checked span { text-decoration: line-through; color: #ccc; }
-        
         .phrase-item { margin-bottom: 15px; background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
         .phrase-jp { color: var(--text); font-size: 1.8rem; display: block; margin: 5px 0; font-weight: 800; }
-        
-        /* Debug */
         .debug-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #222; color: white; padding: 10px; z-index: 3000; font-size: 0.8rem; display: none; flex-direction: column; align-items: center; }
         .slider-row { display: flex; width: 100%; gap: 10px; align-items: center; margin-top: 5px; }
         input[type="range"] { flex: 1; }
         .hide-debug { position: absolute; right: 10px; top: 5px; color: #aaa; cursor: pointer; }
-        
-        /* Loading */
         #loading { text-align: center; padding: 20px; color: #888; }
+        .searching-badge { font-size: 0.7rem; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; color: #888; display: inline-block; margin-top: 2px; }
         
-        /* Searching Indicator */
-        .searching-badge {
-            font-size: 0.7rem; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; color: #888; display: inline-block; margin-top: 2px;
-        }
+        /* TEST MODE BADGE */
+        .test-mode-badge { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #ffeb3b; color: #333; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; z-index: 101; pointer-events: none; opacity: 0.8; }
     </style>
-
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
-
     <div id="lockScreen">
         <div class="lock-content">
             <div class="lock-icon">🔒</div>
@@ -132,7 +116,6 @@
             <div id="errorMsg" class="error-msg">Incorrect Passcode</div>
         </div>
     </div>
-
     <div class="debug-bar" id="debugBar">
         <div class="hide-debug" onclick="document.getElementById('debugBar').style.display='none'">✕</div>
         <div id="debugInfo">🕹 Admin Mode</div>
@@ -142,7 +125,6 @@
             <span id="debugTimeDisplay">06:00</span>
         </div>
     </div>
-
     <header>
         <div class="header-top">
             <div class="header-title">
@@ -150,9 +132,7 @@
                 <div class="subtitle">Mystery Tour</div>
             </div>
             <div class="header-actions">
-                <div id="liveBadge" class="live-badge" style="display:none;">
-                    <div class="live-dot"></div><span id="currentTimeStr">--:--</span>
-                </div>
+                <div id="liveBadge" class="live-badge" style="display:none;"><div class="live-dot"></div><span id="currentTimeStr">--:--</span></div>
                 <div class="icon-btn" onclick="openPackingList()">🧳</div>
                 <div class="icon-btn" onclick="openPhrasebook()">🀄️</div>
             </div>
@@ -160,17 +140,10 @@
         <div id="mapContainer"></div>
         <div class="day-nav" id="dayNav"></div>
     </header>
-
-    <div class="timeline-container" id="timeline">
-        <div id="loading">Loading Schedule...</div>
-    </div>
-
+    <div class="timeline-container" id="timeline"><div id="loading">Loading Schedule...</div></div>
     <div class="modal-overlay" id="modal">
         <div class="modal-sheet">
-            <div class="modal-header">
-                <div class="modal-icon" id="mIcon"></div>
-                <div><div class="modal-title" id="mTitle"></div><span class="modal-time" id="mTime"></span></div>
-            </div>
+            <div class="modal-header"><div class="modal-icon" id="mIcon"></div><div><div class="modal-title" id="mTitle"></div><span class="modal-time" id="mTime"></span></div></div>
             <div class="modal-body" id="mDesc"></div>
             <div class="modal-meta">
                 <div class="meta-row"><span>📍 Location</span><span id="mLoc" style="font-weight:bold"></span></div>
@@ -178,27 +151,14 @@
                 <div class="meta-row" style="border:none; padding-top:5px;"><span>📝 Note</span></div>
                 <div id="mNote" style="font-style:italic;"></div>
             </div>
-            <div class="btn-group">
-                <div class="btn btn-close" onclick="closeModal('modal')">Close</div>
-                <a href="#" id="mMapBtn" target="_blank" class="btn btn-map">Google Maps ↗</a>
-            </div>
+            <div class="btn-group"><div class="btn btn-close" onclick="closeModal('modal')">Close</div><a href="#" id="mMapBtn" target="_blank" class="btn btn-map">Google Maps ↗</a></div>
         </div>
     </div>
-
     <div class="modal-overlay" id="packingModal">
-        <div class="modal-sheet">
-            <h2 style="margin-top:0;">🧳 Checklist</h2>
-            <div id="packingListContainer">Loading...</div>
-            <div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('packingModal')">Close</div>
-        </div>
+        <div class="modal-sheet"><h2 style="margin-top:0;">🧳 Checklist</h2><div id="packingListContainer">Loading...</div><div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('packingModal')">Close</div></div>
     </div>
-
     <div class="modal-overlay" id="phraseModal">
-        <div class="modal-sheet">
-            <h2 style="margin-top:0;">🀄️ Kanji Cards</h2>
-            <div id="phraseContainer">Loading...</div>
-            <div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('phraseModal')">Close</div>
-        </div>
+        <div class="modal-sheet"><h2 style="margin-top:0;">🀄️ Kanji Cards</h2><div id="phraseContainer">Loading...</div><div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('phraseModal')">Close</div></div>
     </div>
 
     <script>
@@ -207,6 +167,12 @@
         // ==========================================
         const PASS_USER = "japan2026"; 
         const PASS_ADMIN = "admin";
+        
+        // 🚨 TEST MODE: Set to TRUE to force the app to think today is 2026/04/26
+        // Change to FALSE before the actual trip!
+        const IS_TEST_MODE = true; 
+        const TEST_TODAY_DATE = "2026/04/26"; 
+
         const TRIP_START_DATE = new Date("2026-04-25T12:35:00"); 
         const UNLOCK_OFFSET = 120; // 2 hours
         const CSV_FILE = "schedule.csv"; 
@@ -228,6 +194,12 @@
         window.onload = function() {
             updateCountdown();
             setInterval(updateCountdown, 1000 * 60 * 60);
+            if(IS_TEST_MODE) {
+                const badge = document.createElement("div");
+                badge.className = "test-mode-badge";
+                badge.innerText = "TEST MODE: " + TEST_TODAY_DATE;
+                document.body.appendChild(badge);
+            }
         };
 
         function unlockApp() {
@@ -241,21 +213,14 @@
         function completeUnlock() {
             const screen = document.getElementById('lockScreen');
             screen.style.opacity = 0;
-            setTimeout(() => { 
-                screen.style.display = 'none'; 
-                // FETCH ALL CSVs
-                fetchAndParseCSV();
-                fetchPackingCSV();
-                fetchPhrasesCSV();
-            }, 500);
+            setTimeout(() => { screen.style.display = 'none'; fetchAndParseCSV(); fetchPackingCSV(); fetchPhrasesCSV(); }, 500);
         }
 
-        // --- 1. SCHEDULE CSV ---
         function fetchAndParseCSV() {
             Papa.parse(CSV_FILE, {
                 download: true, header: true, skipEmptyLines: true,
                 complete: function(results) { processCSVData(results.data); },
-                error: function(err) { console.error(err); document.getElementById('timeline').innerHTML = "Error loading schedule.csv"; }
+                error: function(err) { console.error(err); document.getElementById('timeline').innerHTML = "Error loading schedule.csv<br>Make sure the file exists and has headers."; }
             });
         }
 
@@ -265,12 +230,10 @@
             let lastDateKey = null;
 
             rawData.forEach((row, i) => {
-                // 1. Check "Show" column. If FALSE or Empty, skip this row.
-                // Assuming column name is "Show" (case insensitive)
+                // FIXED LOGIC: Default to TRUE (SHOW) if empty. Only hide if explicitly "FALSE".
                 const showVal = row["Show"] || "";
-                if(showVal.toUpperCase() !== "TRUE") return;
+                if(showVal.toUpperCase() === "FALSE") return;
 
-                // Date Handling
                 let dateRaw = row["Date"];
                 if(!dateRaw && lastDateKey) dateRaw = lastDateKey;
                 if(!dateRaw) return;
@@ -284,13 +247,12 @@
                         dateStr: dateKey,
                         dayDisp: dateRaw.split(' ')[0], 
                         dayName: dateRaw.split(' ')[1] || '',
-                        title: `Day ${Object.keys(grouped).length + 1}`,
+                        title: `Day ${Object.keys(grouped).length}`, // 0-based day
                         events: []
                     };
                     days.push(grouped[dateKey]);
                 }
                 
-                // Parse Coordinates
                 let coords = null;
                 if(row["Lat"] && row["Lng"]) {
                     coords = [parseFloat(row["Lat"]), parseFloat(row["Lng"])];
@@ -299,14 +261,14 @@
                     if(match) coords = [parseFloat(match[1]), parseFloat(match[2])];
                 }
 
-                // DETERMINE TITLE: Use EnglishTitle if available, else Japanese "Itinerary/ Activity"
-                const displayTitle = row["EnglishTitle"] ? row["EnglishTitle"] : (row["Itinerary/ Activity"] || "Activity");
+                // Title Logic: EnglishTitle > Title > "Activity"
+                const displayTitle = row["EnglishTitle"] ? row["EnglishTitle"] : (row["Itinerary/ Activity"] || row["Title"] || "Activity");
 
                 const evt = {
                     id: `evt_${i}`,
                     time: row["Departure time"] || "",
                     end: row["Arrival time"] || "",
-                    title: displayTitle,  // Modified to use EnglishTitle
+                    title: displayTitle,  
                     secretTitle: row["SecretTitle"], 
                     icon: row["Icon"] || "📍",
                     desc: row["note"] || row["category"] || "",
@@ -323,9 +285,11 @@
 
             scheduleData = days;
             
+            // Initial Day Selection (FIXED VARIABLE NAME)
             if (!isAdmin) {
-                const today = getTodayStr();
-                const foundIndex = scheduleData.findIndex(d => d.dateStr === todayStr);
+                const today = getTodayStr(); // Corrected Variable name
+                const foundIndex = scheduleData.findIndex(d => d.dateStr === today); // Use 'today' here
+                // If today is found, use it. If not (e.g. 2025), default to 0.
                 selectedDayIndex = (foundIndex !== -1) ? foundIndex : 0;
             }
 
@@ -333,48 +297,27 @@
             runAutoGeocoding();
         }
 
-        // --- 2. PACKING CSV ---
-        function fetchPackingCSV() {
-            Papa.parse(PACKING_FILE, {
-                download: true, header: true, skipEmptyLines: true,
-                complete: function(results) { renderPackingList(results.data); },
-                error: function() { document.getElementById('packingListContainer').innerHTML = "Error loading packing.csv"; }
-            });
-        }
+        // --- Other CSV Fetchers (Same as before) ---
+        function fetchPackingCSV() { Papa.parse(PACKING_FILE, { download: true, header: true, skipEmptyLines: true, complete: function(results) { renderPackingList(results.data); } }); }
+        function fetchPhrasesCSV() { Papa.parse(PHRASE_FILE, { download: true, header: true, skipEmptyLines: true, complete: function(results) { renderPhrasebook(results.data); } }); }
 
         function renderPackingList(data) {
-            const container = document.getElementById('packingListContainer'); 
-            container.innerHTML = '';
-            
-            // Group by "Group", then "Category"
+            const container = document.getElementById('packingListContainer'); container.innerHTML = '';
             const grouped = {};
             data.forEach(row => {
                 const grp = row["Group"] || "Others";
                 const cat = row["Category"] || "";
                 const item = row["Item"];
                 if(!item) return;
-
                 if(!grouped[grp]) grouped[grp] = {};
                 if(!grouped[grp][cat]) grouped[grp][cat] = [];
                 grouped[grp][cat].push(item);
             });
-
             const savedState = JSON.parse(localStorage.getItem('japanPackingList')) || {};
-
             Object.keys(grouped).forEach(grpName => {
-                const grpHeader = document.createElement('div');
-                grpHeader.className = 'list-group-header';
-                grpHeader.textContent = grpName;
-                container.appendChild(grpHeader);
-
+                const grpHeader = document.createElement('div'); grpHeader.className = 'list-group-header'; grpHeader.textContent = grpName; container.appendChild(grpHeader);
                 Object.keys(grouped[grpName]).forEach(catName => {
-                    if(catName) {
-                        const catHeader = document.createElement('div');
-                        catHeader.className = 'list-category-header';
-                        catHeader.textContent = catName;
-                        container.appendChild(catHeader);
-                    }
-
+                    if(catName) { const catHeader = document.createElement('div'); catHeader.className = 'list-category-header'; catHeader.textContent = catName; container.appendChild(catHeader); }
                     grouped[grpName][catName].forEach(item => {
                         const row = document.createElement('label'); row.className = 'checklist-item';
                         const checkbox = document.createElement('input'); checkbox.type = 'checkbox';
@@ -389,149 +332,97 @@
                 });
             });
         }
-
-        // --- 3. PHRASES CSV ---
-        function fetchPhrasesCSV() {
-            Papa.parse(PHRASE_FILE, {
-                download: true, header: true, skipEmptyLines: true,
-                complete: function(results) { renderPhrasebook(results.data); },
-                error: function() { document.getElementById('phraseContainer').innerHTML = "Error loading phrases.csv"; }
-            });
-        }
-
         function renderPhrasebook(data) {
-            const container = document.getElementById('phraseContainer'); 
-            container.innerHTML = '';
+            const container = document.getElementById('phraseContainer'); container.innerHTML = '';
             data.forEach(row => {
                 if(!row["English"]) return;
                 const div = document.createElement('div'); div.className = 'phrase-item';
-                div.innerHTML = `<span class="phrase-en" style="color:#888; font-size:0.8rem; text-transform:uppercase; font-weight:bold; display:block;">${row["English"]}</span>
-                                 <span class="phrase-jp" style="font-size:1.8rem; font-weight:800; display:block; margin:5px 0;">${row["Japanese"]}</span>`;
-                if(row["Pronunciation"]) {
-                    div.innerHTML += `<div style="font-size:0.9rem; color:#D32F2F; font-weight:bold;">🗣 ${row["Pronunciation"]}</div>`;
-                }
+                div.innerHTML = `<span class="phrase-en" style="color:#888; font-size:0.8rem; text-transform:uppercase; font-weight:bold; display:block;">${row["English"]}</span><span class="phrase-jp" style="font-size:1.8rem; font-weight:800; display:block; margin:5px 0;">${row["Japanese"]}</span>`;
+                if(row["Pronunciation"]) div.innerHTML += `<div style="font-size:0.9rem; color:#D32F2F; font-weight:bold;">🗣 ${row["Pronunciation"]}</div>`;
                 container.appendChild(div);
             });
         }
 
-        // --- AUTO GEOCODING SYSTEM ---
+        // --- Core Logic ---
         async function runAutoGeocoding() {
             const queue = [];
-            scheduleData.forEach(day => {
-                day.events.forEach(evt => {
-                    if(evt.needsGeocoding) {
-                        if(geoCache[evt.loc]) {
-                            evt.coords = geoCache[evt.loc];
-                            evt.needsGeocoding = false;
-                        } else {
-                            queue.push(evt);
-                        }
-                    }
-                });
-            });
-
+            scheduleData.forEach(day => { day.events.forEach(evt => { if(evt.needsGeocoding) { if(geoCache[evt.loc]) { evt.coords = geoCache[evt.loc]; evt.needsGeocoding = false; } else { queue.push(evt); } } }); });
             for (const evt of queue) {
                 await new Promise(r => setTimeout(r, 1200)); 
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(evt.loc)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if(data && data.length > 0) {
-                            const lat = parseFloat(data[0].lat);
-                            const lon = parseFloat(data[0].lon);
-                            evt.coords = [lat, lon];
-                            geoCache[evt.loc] = [lat, lon];
-                            localStorage.setItem('myTripGeoCache', JSON.stringify(geoCache));
-                            if(scheduleData[selectedDayIndex].events.includes(evt)) {
-                                renderTimeline();
-                            }
-                        }
-                    })
-                    .catch(e => console.log("Geo error", e));
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(evt.loc)}`).then(res => res.json()).then(data => {
+                    if(data && data.length > 0) { const lat = parseFloat(data[0].lat); const lon = parseFloat(data[0].lon); evt.coords = [lat, lon]; geoCache[evt.loc] = [lat, lon]; localStorage.setItem('myTripGeoCache', JSON.stringify(geoCache)); if(scheduleData[selectedDayIndex].events.includes(evt)) renderTimeline(); }
+                }).catch(e => console.log("Geo error", e));
             }
         }
 
         function convertDate(jpDateStr) {
-            const match = jpDateStr.match(/(\d+)月(\d+)日/);
-            if(match) {
-                const m = match[1].padStart(2, '0');
-                const d = match[2].padStart(2, '0');
-                return `${BASE_YEAR}/${m}/${d}`;
+            let match = jpDateStr.match(/(\d+)月(\d+)日/);
+            if(match) return `${BASE_YEAR}/${match[1].padStart(2, '0')}/${match[2].padStart(2, '0')}`;
+            if(jpDateStr.includes('/')) {
+                const parts = jpDateStr.split('/');
+                if(parts.length === 2) return `${BASE_YEAR}/${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}`;
+                if(parts.length === 3) return jpDateStr; 
             }
             return jpDateStr; 
         }
 
-        function initApp() {
-            initMap();
-            renderNav();
-            renderTimeline();
-        }
-
-        function initMap() {
-            if(map) return;
-            map = L.map('mapContainer').setView([35.6895, 139.6917], 5);
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
-        }
+        function initApp() { initMap(); renderNav(); renderTimeline(); }
+        function initMap() { if(map) return; map = L.map('mapContainer').setView([35.6895, 139.6917], 5); L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map); }
 
         function updateMap(dayData, currentMinutes) {
             if(!map) return;
-            mapMarkers.forEach(m => map.removeLayer(m));
-            mapMarkers = [];
-            
-            const boundsCoords = [];
-            let markerIndex = 1;
-
+            mapMarkers.forEach(m => map.removeLayer(m)); mapMarkers = [];
+            const boundsCoords = []; let markerIndex = 1;
             if(dayData && dayData.events) {
                 dayData.events.forEach(evt => {
                     const startMins = getMinutes(evt.time);
                     const isUnlocked = currentMinutes >= (startMins - UNLOCK_OFFSET);
-                    
                     if(isUnlocked && evt.coords) {
-                        const numIcon = L.divIcon({
-                            className: 'number-icon',
-                            html: markerIndex++,
-                            iconSize: [24, 24]
-                        });
-
+                        const numIcon = L.divIcon({ className: 'number-icon', html: markerIndex++, iconSize: [24, 24] });
                         const marker = L.marker(evt.coords, {icon: numIcon}).addTo(map);
                         marker.bindPopup(`<b>${evt.title}</b><br>${evt.time}`);
                         mapMarkers.push(marker);
-                        
-                        if(!evt.ignoreBounds) {
-                            boundsCoords.push(evt.coords);
-                        }
+                        if(!evt.ignoreBounds) boundsCoords.push(evt.coords);
                     }
                 });
             }
+            if(boundsCoords.length > 0) { const bounds = L.latLngBounds(boundsCoords); map.fitBounds(bounds, {padding: [50, 50], maxZoom: 14}); } 
+            else if (mapMarkers.length > 0) { const group = new L.featureGroup(mapMarkers); map.fitBounds(group.getBounds(), {padding: [50, 50]}); } 
+            else { map.setView([36.2, 138.2], 5); }
+        }
 
-            if(boundsCoords.length > 0) {
-                const bounds = L.latLngBounds(boundsCoords);
-                map.fitBounds(bounds, {padding: [50, 50], maxZoom: 14});
-            } else if (mapMarkers.length > 0) {
-                 const group = new L.featureGroup(mapMarkers);
-                 map.fitBounds(group.getBounds(), {padding: [50, 50]});
-            } else {
-                map.setView([36.2, 138.2], 5);
-            }
+        function renderNav() {
+            const nav = document.getElementById('dayNav'); nav.innerHTML = '';
+            scheduleData.forEach((day, index) => {
+                const chip = document.createElement('div');
+                chip.className = `day-chip ${index === selectedDayIndex ? 'active' : ''}`;
+                chip.innerHTML = `<span class="date">${day.dayDisp}</span>${day.dayName}`;
+                chip.onclick = () => { selectedDayIndex = index; renderNav(); renderTimeline(); };
+                nav.appendChild(chip);
+            });
         }
 
         function renderTimeline() {
-            const container = document.getElementById('timeline');
-            container.innerHTML = '';
+            const container = document.getElementById('timeline'); container.innerHTML = '';
+            if(scheduleData.length === 0) { container.innerHTML = "<div style='text-align:center; margin-top:20px;'>No Schedule Data</div>"; return; }
             
-            if(scheduleData.length === 0) {
-                container.innerHTML = "<div style='text-align:center; margin-top:20px;'>No Schedule Data</div>";
-                return;
-            }
-
             const day = scheduleData[selectedDayIndex];
-
+            
+            // --- TIME LOGIC (REAL vs ADMIN vs TEST) ---
             let currentMinutes;
             if (isAdmin) {
                 currentMinutes = debugTimeMinutes;
+            } else if (IS_TEST_MODE) {
+                // In Test Mode, compare selected day with "Fake Today"
+                if (day.dateStr > TEST_TODAY_DATE) currentMinutes = -9999;
+                else if (day.dateStr < TEST_TODAY_DATE) currentMinutes = 9999;
+                else {
+                    // If selected day IS fake today, use REAL time of day
+                    const now = new Date();
+                    currentMinutes = now.getHours() * 60 + now.getMinutes();
+                }
             } else {
+                // Real Production Mode
                 const now = new Date();
                 currentMinutes = now.getHours() * 60 + now.getMinutes();
                 const todayStr = getTodayStr();
@@ -541,95 +432,35 @@
 
             updateMap(day, currentMinutes);
 
-            const heading = document.createElement('div');
-            heading.className = 'day-heading';
-            heading.textContent = day.title;
-            container.appendChild(heading);
+            const heading = document.createElement('div'); heading.className = 'day-heading'; heading.textContent = day.title || "Day Plan"; container.appendChild(heading);
 
             day.events.forEach(evt => {
                 const startMins = getMinutes(evt.time);
                 const isUnlocked = currentMinutes >= (startMins - UNLOCK_OFFSET);
-
-                const card = document.createElement('div');
-                card.className = `event-card ${isUnlocked ? '' : 'locked'}`;
+                const card = document.createElement('div'); card.className = `event-card ${isUnlocked ? '' : 'locked'}`;
+                if(isUnlocked && card.dataset.locked === 'true') card.classList.add('unlocking'); card.dataset.locked = !isUnlocked;
                 
-                if(isUnlocked && card.dataset.locked === 'true') card.classList.add('unlocking');
-                card.dataset.locked = !isUnlocked;
-
                 const dTitle = isUnlocked ? evt.title : (evt.secretTitle || "Secret Activity");
                 const dIcon = isUnlocked ? evt.icon : "🔒";
                 const dDesc = isUnlocked ? evt.desc : "Wait for it...";
                 const badge = (!isUnlocked) ? `<span class="secret-badge">SECRET</span><br>` : '';
-                
-                const searchStatus = (isUnlocked && !evt.coords && evt.needsGeocoding) 
-                    ? `<div class="searching-badge">🔍 Locating...</div>` : '';
+                const searchStatus = (isUnlocked && !evt.coords && evt.needsGeocoding) ? `<div class="searching-badge">🔍 Locating...</div>` : '';
 
-                card.innerHTML = `
-                    <div class="time-col">
-                        <span class="time-start">${evt.time}</span>
-                        <span class="time-end">${evt.end || ''}</span>
-                    </div>
-                    <div class="content-col">
-                        <div class="event-icon">${dIcon}</div>
-                        <div class="text-group">
-                            ${badge}
-                            <div class="event-title">${dTitle}</div>
-                            <div class="event-desc">${dDesc}</div>
-                            ${searchStatus}
-                        </div>
-                    </div>
-                `;
-                card.onclick = () => {
-                    if(!isUnlocked) alert(`🔒 Locked! Reveals at ${formatTime(startMins - UNLOCK_OFFSET)}`);
-                    else openModal(evt, day.dateStr);
-                };
+                card.innerHTML = `<div class="time-col"><span class="time-start">${evt.time}</span><span class="time-end">${evt.end || ''}</span></div><div class="content-col"><div class="event-icon">${dIcon}</div><div class="text-group">${badge}<div class="event-title">${dTitle}</div><div class="event-desc">${dDesc}</div>${searchStatus}</div></div>`;
+                card.onclick = () => { if(!isUnlocked) alert(`🔒 Locked! Reveals at ${formatTime(startMins - UNLOCK_OFFSET)}`); else openModal(evt, day.dateStr); };
                 container.appendChild(card);
             });
         }
 
-        // HELPERS
+        // --- Helpers ---
         function updateCountdown() {
-            const now = new Date();
-            const diffTime = TRIP_START_DATE - now;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const el = document.getElementById('countdown');
-            if(el) {
-                if (diffDays > 0) el.innerText = `T-Minus ${diffDays} Days`;
-                else if (diffDays > -15) el.innerText = "Enjoy the Trip!";
-                else el.innerText = "Trip Completed";
-            }
+            const now = new Date(); const diffTime = TRIP_START_DATE - now; const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const el = document.getElementById('countdown'); if(el) { if (diffDays > 0) el.innerText = `T-Minus ${diffDays} Days`; else el.innerText = "Trip Completed"; }
         }
         function showAdminControls() { document.getElementById('debugBar').style.display = 'flex'; }
-        function startRealTimeClock() {
-            document.getElementById('liveBadge').style.display = 'flex';
-            updateRealTime();
-            timerInterval = setInterval(updateRealTime, 60000);
-        }
-        function updateRealTime() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2,'0');
-            const m = String(now.getMinutes()).padStart(2,'0');
-            document.getElementById('currentTimeStr').textContent = `${h}:${m}`;
-            renderTimeline();
-        }
-        function initDebugMode() {
-            document.getElementById('timeSlider').addEventListener('input', (e) => {
-                debugTimeMinutes = parseInt(e.target.value);
-                document.getElementById('debugTimeDisplay').textContent = formatTime(debugTimeMinutes);
-                renderTimeline();
-            });
-        }
-        function renderNav() {
-            const nav = document.getElementById('dayNav');
-            nav.innerHTML = '';
-            scheduleData.forEach((day, index) => {
-                const chip = document.createElement('div');
-                chip.className = `day-chip ${index === selectedDayIndex ? 'active' : ''}`;
-                chip.innerHTML = `<span class="date">${day.dayDisp}</span>${day.dayName}`;
-                chip.onclick = () => { selectedDayIndex = index; renderNav(); renderTimeline(); };
-                nav.appendChild(chip);
-            });
-        }
+        function startRealTimeClock() { document.getElementById('liveBadge').style.display = 'flex'; updateRealTime(); timerInterval = setInterval(updateRealTime, 60000); }
+        function updateRealTime() { const now = new Date(); const h = String(now.getHours()).padStart(2,'0'); const m = String(now.getMinutes()).padStart(2,'0'); document.getElementById('currentTimeStr').textContent = `${h}:${m}`; renderTimeline(); }
+        function initDebugMode() { document.getElementById('timeSlider').addEventListener('input', (e) => { debugTimeMinutes = parseInt(e.target.value); document.getElementById('debugTimeDisplay').textContent = formatTime(debugTimeMinutes); renderTimeline(); }); }
         function openPackingList() { document.getElementById('packingModal').classList.add('active'); }
         function openPhrasebook() { document.getElementById('phraseModal').classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
@@ -638,18 +469,12 @@
         function getTodayStr() { const today = new Date(); const y = today.getFullYear(); const m = String(today.getMonth() + 1).padStart(2, '0'); const d = String(today.getDate()).padStart(2, '0'); return `${y}/${m}/${d}`; }
         
         function openModal(evt, dateStr) {
-            document.getElementById('mIcon').textContent = evt.icon;
-            document.getElementById('mTitle').textContent = evt.title;
-            document.getElementById('mTime').textContent = `${dateStr} ${evt.time} - ${evt.end || '?'}`;
-            document.getElementById('mDesc').textContent = evt.detail || evt.desc;
-            document.getElementById('mLoc').textContent = evt.loc || 'Unknown';
-            document.getElementById('mCost').textContent = evt.cost || '-';
+            document.getElementById('mIcon').textContent = evt.icon; document.getElementById('mTitle').textContent = evt.title; document.getElementById('mTime').textContent = `${dateStr} ${evt.time}`; document.getElementById('mDesc').textContent = evt.detail || evt.desc; document.getElementById('mLoc').textContent = evt.loc || 'Unknown'; document.getElementById('mCost').textContent = evt.cost || '-';
             let mapUrl = "";
-            if(evt.coords) {
-                mapUrl = `https://www.google.com/maps/search/?api=1&query=${evt.coords[0]},${evt.coords[1]}`;
-            } else {
-                mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(evt.loc)}`;
-            }
+            if (evt.url && evt.url.includes("maps")) mapUrl = evt.url;
+            else if (evt.loc && evt.loc.startsWith("http")) mapUrl = evt.loc;
+            else if (evt.coords) mapUrl = `https://www.google.com/maps/search/?api=1&query=${evt.coords[0]},${evt.coords[1]}`;
+            else mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(evt.loc)}`;
             document.getElementById('mMapBtn').href = mapUrl;
             document.getElementById('modal').classList.add('active');
         }
