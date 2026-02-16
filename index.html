@@ -226,9 +226,9 @@
             let lastDateKey = null;
 
             rawData.forEach((row, i) => {
-                // FIXED: Default to TRUE (Show). Only hide if "FALSE".
+                // FIXED: Default to FALSE (don't show). Only show if "TRUE".
                 const showVal = (row["Show"] || "").trim().toUpperCase();
-                if(showVal === "FALSE") return;
+                if(showVal !== "TRUE") return;
 
                 let dateRaw = row["Date"];
                 if(!dateRaw && lastDateKey) dateRaw = lastDateKey;
