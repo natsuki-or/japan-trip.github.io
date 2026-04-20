@@ -27,7 +27,7 @@
         .header-top { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; }
         .header-title h1 { margin: 0; font-size: 1.1rem; letter-spacing: 1px; }
         .header-title .subtitle { font-size: 0.65rem; color: var(--gray); text-transform: uppercase; }
-        .header-actions { display: flex; gap: 12px; }
+        .header-actions { display: flex; gap: 15px; }
         .icon-btn { font-size: 1.4rem; cursor: pointer; text-decoration: none; color: inherit; }
         .live-badge { font-size: 0.7rem; background: #eee; padding: 4px 8px; border-radius: 4px; color: #555; display: flex; align-items: center; gap: 4px; margin-right: 5px; }
         .live-dot { width: 6px; height: 6px; background: red; border-radius: 50%; animation: blink 1s infinite; }
@@ -90,7 +90,6 @@
         .checklist-item { display: flex; align-items: center; padding: 10px 5px; border-bottom: 1px solid #f0f0f0; }
         .checklist-item input[type="checkbox"] { transform: scale(1.3); margin-right: 15px; accent-color: var(--primary); }
         .checklist-item.checked span { text-decoration: line-through; color: #ccc; }
-        
         .phrase-item { margin-bottom: 15px; background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
         .phrase-jp { color: var(--text); font-size: 1.8rem; display: block; margin: 5px 0; font-weight: 800; }
         
@@ -101,14 +100,13 @@
         .hide-debug { position: absolute; right: 10px; top: 5px; color: #aaa; cursor: pointer; }
         #loading { text-align: center; padding: 20px; color: #888; }
         .searching-badge { font-size: 0.7rem; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; color: #888; display: inline-block; margin-top: 2px; }
+        
         .test-mode-badge { display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #ffeb3b; color: #333; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; z-index: 101; pointer-events: none; opacity: 0.8; }
     </style>
-    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
-
     <div id="lockScreen">
         <div class="lock-content">
             <div class="lock-icon">🔒</div>
@@ -119,7 +117,6 @@
             <div id="errorMsg" class="error-msg">Incorrect Passcode</div>
         </div>
     </div>
-
     <div class="debug-bar" id="debugBar">
         <div class="hide-debug" onclick="document.getElementById('debugBar').style.display='none'">✕</div>
         <div id="debugInfo">🕹 Admin Mode</div>
@@ -129,7 +126,6 @@
             <span id="debugTimeDisplay">06:00</span>
         </div>
     </div>
-
     <header>
         <div class="header-top">
             <div class="header-title">
@@ -138,7 +134,9 @@
             </div>
             <div class="header-actions">
                 <div id="liveBadge" class="live-badge" style="display:none;"><div class="live-dot"></div><span id="currentTimeStr">--:--</span></div>
+                
                 <a href="japanese_history_infographic.html" target="_blank" class="icon-btn">📜</a>
+                
                 <div class="icon-btn" onclick="openPackingList()">🧳</div>
                 <div class="icon-btn" onclick="openPhrasebook()">🀄️</div>
             </div>
@@ -146,17 +144,10 @@
         <div id="mapContainer"></div>
         <div class="day-nav" id="dayNav"></div>
     </header>
-
-    <div class="timeline-container" id="timeline">
-        <div id="loading">Loading Schedule...</div>
-    </div>
-
+    <div class="timeline-container" id="timeline"><div id="loading">Loading Schedule...</div></div>
     <div class="modal-overlay" id="modal">
         <div class="modal-sheet">
-            <div class="modal-header">
-                <div class="modal-icon" id="mIcon"></div>
-                <div><div class="modal-title" id="mTitle"></div><span class="modal-time" id="mTime"></span></div>
-            </div>
+            <div class="modal-header"><div class="modal-icon" id="mIcon"></div><div><div class="modal-title" id="mTitle"></div><span class="modal-time" id="mTime"></span></div></div>
             <div class="modal-body" id="mDesc"></div>
             <div class="modal-meta">
                 <div class="meta-row"><span>📍 Location</span><span id="mLoc" style="font-weight:bold"></span></div>
@@ -164,27 +155,14 @@
                 <div class="meta-row" style="border:none; padding-top:5px;"><span>📝 Note</span></div>
                 <div id="mNote" style="font-style:italic;"></div>
             </div>
-            <div class="btn-group">
-                <div class="btn btn-close" onclick="closeModal('modal')">Close</div>
-                <a href="#" id="mMapBtn" target="_blank" class="btn btn-map">Google Maps ↗</a>
-            </div>
+            <div class="btn-group"><div class="btn btn-close" onclick="closeModal('modal')">Close</div><a href="#" id="mMapBtn" target="_blank" class="btn btn-map">Google Maps ↗</a></div>
         </div>
     </div>
-
     <div class="modal-overlay" id="packingModal">
-        <div class="modal-sheet">
-            <h2 style="margin-top:0;">🧳 Checklist</h2>
-            <div id="packingListContainer">Loading...</div>
-            <div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('packingModal')">Close</div>
-        </div>
+        <div class="modal-sheet"><h2 style="margin-top:0;">🧳 Checklist</h2><div id="packingListContainer">Loading...</div><div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('packingModal')">Close</div></div>
     </div>
-
     <div class="modal-overlay" id="phraseModal">
-        <div class="modal-sheet">
-            <h2 style="margin-top:0;">🀄️ Kanji Cards</h2>
-            <div id="phraseContainer">Loading...</div>
-            <div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('phraseModal')">Close</div>
-        </div>
+        <div class="modal-sheet"><h2 style="margin-top:0;">🀄️ Kanji Cards</h2><div id="phraseContainer">Loading...</div><div class="btn btn-close" style="margin-top:20px;" onclick="closeModal('phraseModal')">Close</div></div>
     </div>
 
     <script>
@@ -256,8 +234,9 @@
             let lastDateKey = null;
 
             rawData.forEach((row, i) => {
+                // FIXED: Skip unless strictly "TRUE"
                 const showVal = (row["Show"] || "").trim().toUpperCase();
-                if(showVal !== "TRUE") return;
+                if(showVal !== "TRUE") return; 
 
                 let dateRaw = row["Date"];
                 if(!dateRaw && lastDateKey) dateRaw = lastDateKey;
@@ -310,8 +289,9 @@
             scheduleData = days;
             
             if (!isAdmin) {
+                const todayObj = new Date();
                 const todayStr = getTodayStr(); 
-                const foundIndex = scheduleData.findIndex(d => d.dateStr === todayStr); 
+                const foundIndex = scheduleData.findIndex(d => d.dateStr === todayStr);
                 selectedDayIndex = (foundIndex !== -1) ? foundIndex : 0;
             }
 
