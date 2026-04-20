@@ -1,0 +1,604 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,300;400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --jp-red: #C0392B;
+    --jp-red-light: #FADBD8;
+    --jp-gold: #B7860B;
+    --jp-navy: #1A2744;
+    --jp-sage: #5D7052;
+    --uk-blue: #1B3A6B;
+    --uk-blue-light: #D6E4F7;
+    --uk-teal: #1A6B5C;
+    --era-border: rgba(0,0,0,0.08);
+    --text-main: var(--color-text-primary);
+    --text-muted: var(--color-text-secondary);
+    --surface: var(--color-background-primary);
+    --surface2: var(--color-background-secondary);
+  }
+  .wrap { font-family: 'Source Serif 4', serif; max-width: 700px; margin: 0 auto; padding: 0 0 2rem; }
+  .header { text-align: center; padding: 2rem 1rem 1.5rem; border-bottom: 2px solid var(--jp-red); margin-bottom: 0; }
+  .header-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: var(--jp-red); letter-spacing: 0.02em; }
+  .header-sub { font-size: 13px; color: var(--text-muted); margin-top: 6px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .legend { display: flex; gap: 20px; justify-content: center; padding: 14px 1rem; background: var(--surface2); border-bottom: 0.5px solid var(--era-border); flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-muted); }
+  .legend-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+  .timeline { position: relative; padding: 0; }
+  .era { display: grid; grid-template-columns: 90px 6px 1fr; gap: 0; border-bottom: 0.5px solid var(--era-border); min-height: 110px; }
+  .era:last-child { border-bottom: none; }
+  .era-date { padding: 14px 10px 14px 14px; display: flex; flex-direction: column; justify-content: flex-start; }
+  .era-date-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .era-date-range { font-size: 11px; font-weight: 600; color: var(--text-muted); line-height: 1.3; }
+  .era-line { width: 6px; position: relative; display: flex; align-items: stretch; }
+  .era-line-bar { width: 4px; margin: 0 auto; flex: 1; border-radius: 2px; }
+  .era-dot { position: absolute; left: 50%; transform: translateX(-50%); top: 18px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--surface); z-index: 2; }
+  .era-content { padding: 14px 14px 14px 16px; }
+  .era-header { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .era-name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--jp-navy); line-height: 1.2; }
+  .era-name.dark { color: var(--text-main); }
+  .era-kanji { font-size: 13px; color: var(--text-muted); margin-left: 2px; padding-top: 2px; }
+  .era-gov { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 600; letter-spacing: 0.04em; margin-left: auto; white-space: nowrap; align-self: flex-start; }
+  .gov-emperor { background: #FADBD8; color: #922B21; }
+  .gov-shogun  { background: #D5E8D4; color: #1E6B3D; }
+  .gov-military{ background: #FFF3CD; color: #856404; }
+  .gov-modern  { background: #D6E4F7; color: #1B3A6B; }
+  .gov-ancient { background: #EDE7F6; color: #4527A0; }
+  .era-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .section { border-radius: 6px; padding: 8px 10px; font-size: 12px; line-height: 1.5; }
+  .section-jp { background: #FEF9F0; border-left: 3px solid var(--jp-gold); color: var(--text-main); }
+  .section-uk { background: #EEF4FB; border-left: 3px solid var(--uk-blue); color: var(--text-main); }
+  .section-culture { background: #F0F7F0; border-left: 3px solid var(--jp-sage); color: var(--text-main); }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; }
+  .section-label.jp { color: var(--jp-gold); }
+  .section-label.uk { color: var(--uk-blue); }
+  .section-label.cu { color: var(--jp-sage); }
+  .era-highlight { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-style: italic; }
+  .note-box { grid-column: 1/-1; background: #FEF3D0; border-left: 3px solid var(--jp-gold); border-radius: 0 6px 6px 0; padding: 8px 10px; font-size: 11.5px; color: #7D5200; margin-bottom: 6px; line-height: 1.5; }
+  .key-fig { display: inline-block; background: rgba(192,57,43,0.08); border-radius: 3px; padding: 0 4px; font-size: 11px; color: var(--jp-red); font-weight: 600; margin: 1px; }
+  @media (max-width: 480px) {
+    .era-sections { grid-template-columns: 1fr; }
+    .era { grid-template-columns: 76px 6px 1fr; }
+    .era-name { font-size: 14px; }
+  }
+</style>
+
+<div class="wrap">
+  <div class="header">
+    <div class="header-title">A Comprehensive History of Japan</div>
+    <div class="header-sub">With British & European Parallels · From Prehistory to the Present</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#C0392B"></div> Key period marker</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FEF9F0;border:1.5px solid #B7860B"></div> Japan: Politics & Society</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#F0F7F0;border:1.5px solid #5D7052"></div> Religion & Culture</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#EEF4FB;border:1.5px solid #1B3A6B"></div> British / Western Parallels</div>
+  </div>
+
+  <div class="timeline">
+
+    <!-- Palaeolithic -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">Until c. 14,000 BCE</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#9C7BB8"></div>
+        <div class="era-dot" style="background:#9C7BB8"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Palaeolithic Era</div>
+          <div class="era-kanji">旧石器時代</div>
+          <div class="era-gov gov-ancient">Pre-state</div>
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Mobile hunter-gatherer communities using chipped stone tools; earliest signs of ritual belief.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Stone Age hunter-gatherer societies; no settled communities yet.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jomon -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">c.14,000 BCE – c.10th c. BCE</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#9C7BB8"></div>
+        <div class="era-dot" style="background:#9C7BB8"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Jōmon Period</div>
+          <div class="era-kanji">縄文時代</div>
+          <div class="era-gov gov-ancient">Clan-based</div>
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Warming climate leads to settled pit-dwelling villages and shell middens (kaizuka). One of the earliest pottery cultures in the world.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Animist beliefs; clay figurines (<span class="key-fig">dogū</span>) for ritual use; highly decorative flame-style pottery (kaen-doki).
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Stone Age → Stonehenge era. Settlement without agriculture; Britain develops megalithic ritual monuments.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Yayoi -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">c.10th c. BCE – c.250 CE</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#5D7052"></div>
+        <div class="era-dot" style="background:#5D7052"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Yayoi Period</div>
+          <div class="era-kanji">弥生時代</div>
+          <div class="era-gov gov-ancient">Proto-kingdoms</div>
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Wet-rice farming and bronze &amp; iron tools arrive from the continent. Surplus creates wealth gaps and social hierarchy; small kingdoms (kuni) emerge. <span class="key-fig">Queen Himiko</span> of Yamatai first appears in Chinese records.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Agricultural ritual using bronze bells (<span class="key-fig">dōtaku</span>) and swords. Thin, utilitarian Yayoi pottery replaces ornate Jōmon styles.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Iron Age Britain → Roman invasion (43 CE). Introduction of metals and organised warfare mirrors Japan's Yayoi transition.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kofun -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">c. 250–593 CE</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#B7860B"></div>
+        <div class="era-dot" style="background:#B7860B"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Kofun Period</div>
+          <div class="era-kanji">古墳時代</div>
+          <div class="era-gov gov-emperor">Imperial (Yamato)</div>
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Keyhole-shaped burial mounds (<span class="key-fig">kofun</span>) mark elite power. The <span class="key-fig">Yamato court</span> gradually unifies the archipelago. Artisans (<span class="key-fig">toraijin</span>) emigrate from Korea &amp; China, bringing new crafts and writing.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Elaborate funerary rites; terracotta figurines (<span class="key-fig">haniwa</span>) surround tombs. Continental spirit-beliefs (shinsen shisō) flow in.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Anglo-Saxon Heptarchy forms after Roman withdrawal. Parallel emergence of warrior-aristocrat burial mounds (e.g. Sutton Hoo).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Asuka -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">593–710 CE</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#C0392B"></div>
+        <div class="era-dot" style="background:#C0392B"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name" style="color:#C0392B">Asuka Period</div>
+          <div class="era-kanji">飛鳥時代</div>
+          <div class="era-gov gov-emperor">Emperor + Regent</div>
+        </div>
+        <div class="note-box">
+          Key figures: <span class="key-fig">Prince Shōtoku</span> (regent, 17-Article Constitution), <span class="key-fig">Taika Reform 645</span>, <span class="key-fig">Taihō Code 701</span> (Tang-style law)
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            First centralised state modelled on Tang China. Aristocratic clans (<span class="key-fig">uji</span>) consolidated under imperial authority. The Taihō legal code establishes ministries, provinces, and a tax system.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Buddhism officially adopted (538 or 552 CE); <span class="key-fig">Hōryū-ji</span> temple built — world's oldest surviving wooden structure. Asuka sculpture fuses Korean and Chinese styles (Asuka Culture).
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Christianity spreads through Britain (Synod of Whitby 664). Both islands absorb a continental world religion that reshapes their entire social fabric simultaneously.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nara -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">710–794 CE</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#C0392B"></div>
+        <div class="era-dot" style="background:#C0392B"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name" style="color:#C0392B">Nara Period</div>
+          <div class="era-kanji">奈良時代</div>
+          <div class="era-gov gov-emperor">Emperor</div>
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Capital moved to Nara — first permanent city. Regular embassies (<span class="key-fig">kentōshi</span>) to Tang China import culture wholesale. Emperor <span class="key-fig">Shōmu</span> sponsors massive state Buddhism.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Great Buddha of Tōdai-ji cast (752); provincial temples (kokubunji) built nationwide. Cosmopolitan <span class="key-fig">Tenpyō Culture</span>. Chronicles <span class="key-fig">Kojiki</span> (712) &amp; <span class="key-fig">Nihon Shoki</span> (720) compiled.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Carolingian Renaissance begins. Both societies absorbing a high continental civilisation to legitimise power and organise the state.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heian -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">794–1185 CE</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#C0392B"></div>
+        <div class="era-dot" style="background:#C0392B"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name" style="color:#C0392B">Heian Period</div>
+          <div class="era-kanji">平安時代</div>
+          <div class="era-gov gov-emperor">Emperor → Regents → Cloistered</div>
+        </div>
+        <div class="note-box">
+          Key figures: <span class="key-fig">Fujiwara clan</span> (regents), <span class="key-fig">Murasaki Shikibu</span> (The Tale of Genji), <span class="key-fig">Sei Shōnagon</span> (The Pillow Book)
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Capital at Kyoto. Real power held by Fujiwara regents (sesshō / kampaku) early on, then by retired emperors (insei). Late period: <span class="key-fig">Taira &amp; Minamoto</span> clans fight for supremacy (Genpei War 1180–85).
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            After missions to China end, a uniquely Japanese aesthetic blooms: <span class="key-fig">yamato-e</span> painting, hiragana script, mono no aware sensibility. Pure Land Buddhism (Jōdo) spreads. World's first novel written.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Viking raids → Norman Conquest (1066). Power shifts from monarch to barons; courtly literature and chivalric culture flourish — a parallel to Heian aristocratic refinement.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kamakura -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">1185–1333</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#1E6B3D"></div>
+        <div class="era-dot" style="background:#1E6B3D"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Kamakura Shogunate</div>
+          <div class="era-kanji">鎌倉時代</div>
+          <div class="era-gov gov-shogun">Shogun (Warrior)</div>
+        </div>
+        <div class="note-box">
+          Key figures: <span class="key-fig">Minamoto no Yoritomo</span> (1st Shogun), <span class="key-fig">Hōjō regents</span> — Mongol Invasions: 1274 &amp; 1281 repelled (kamikaze winds)
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Japan's first warrior government (bakufu) at Kamakura. Emperor remains symbolic in Kyoto; real rule is by the shogun, then the Hōjō regent-family. Feudal land grants cement samurai loyalty.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            New accessible Buddhist sects: <span class="key-fig">Zen, Jōdo, Nichiren</span> — spread to warriors and commoners. Vigorous realistic sculpture; dramatic illustrated scrolls (emakimono).
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Magna Carta (1215); High Middle Ages. Knight-based feudalism mirrors samurai culture: land for loyalty, honour codes, and a warrior class rising above old aristocracy.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Muromachi -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">1336–1573</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#1E6B3D"></div>
+        <div class="era-dot" style="background:#1E6B3D"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Muromachi (Ashikaga) Shogunate</div>
+          <div class="era-kanji">室町時代</div>
+          <div class="era-gov gov-shogun">Shogun → Warlords</div>
+        </div>
+        <div class="note-box">
+          Includes: <span class="key-fig">Nanbokuchō</span> (dual courts), <span class="key-fig">Ōnin War</span> (1467), and the <span class="key-fig">Sengoku</span> (Warring States) era of gekokujō — "the low overthrowing the high"
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Ashikaga shoguns rule from Kyoto but authority fractures. The Ōnin War (1467) triggers a century of warlord warfare (Sengoku). Regional lords (daimyō) become autonomous rulers.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Zen aesthetics permeate elite culture: <span class="key-fig">Kinkaku-ji</span> (Golden Pavilion), <span class="key-fig">Ginkaku-ji</span>, ink-wash painting (suiboku-ga). Tea ceremony (<span class="key-fig">chanoyu</span>) and Noh theatre — the DNA of classical Japanese arts — take form.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Wars of the Roses (1455–85) → Tudor dynasty. Both nations experience prolonged internal civil war as central authority collapses, resolved by new strongmen.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Azuchi-Momoyama -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">1573–1603</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#B7860B"></div>
+        <div class="era-dot" style="background:#B7860B"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Azuchi–Momoyama Period</div>
+          <div class="era-kanji">安土桃山時代</div>
+          <div class="era-gov gov-military">Unification</div>
+        </div>
+        <div class="note-box">
+          Key figures: <span class="key-fig">Oda Nobunaga</span>, <span class="key-fig">Toyotomi Hideyoshi</span> (Taikō Survey &amp; Sword Hunt), <span class="key-fig">Sen no Rikyū</span> (wabi-cha)
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Nobunaga and Hideyoshi reunify Japan by force. Land surveys (taiko kenchi) standardise taxation; sword hunts (katanagari) disarm peasants and rigidify class boundaries. Hideyoshi invades Korea twice (1592, 1597).
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Christianity and muskets arrive from Portugal (1543). Flamboyant Momoyama culture: gold-screen paintings, grand castles. Simultaneously, Rikyū perfects the austere wabi-cha aesthetic. <span class="key-fig">Nanban</span> (Southern Barbarian) art fusion.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Elizabethan England; European Wars of Religion. Gunpowder revolution transforms warfare on both continents. Trade routes expand globally.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edo -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">1603–1868</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#1E6B3D"></div>
+        <div class="era-dot" style="background:#1E6B3D"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Edo Period (Tokugawa Shogunate)</div>
+          <div class="era-kanji">江戸時代</div>
+          <div class="era-gov gov-shogun">Shogun (265 yrs)</div>
+        </div>
+        <div class="note-box">
+          Key figures: <span class="key-fig">Tokugawa Ieyasu</span> (founder), <span class="key-fig">Commodore Perry</span> 1853 (forced opening). Policy of <span class="key-fig">sakoku</span> (isolation) with limited Dutch &amp; Chinese trade at Nagasaki
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Tokugawa shoguns rule from Edo (Tokyo). Rigid four-class system: samurai, farmers, artisans, merchants. ~260 years of domestic peace. Daimyō kept weak via alternate attendance (sankin-kōtai) policy.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Christianity banned; Neo-Confucian (Zhu Xi) ideology promoted. Urban merchant culture flourishes: <span class="key-fig">ukiyo-e</span> woodblock prints (Hokusai, Hiroshige), <span class="key-fig">kabuki</span> theatre, haiku poetry. Rising literacy and commercialisation.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Shakespeare → Industrial Revolution → early Victorian era. While Britain industrialises and builds a global empire, Japan isolated.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meiji -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">1868–1912</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#1B3A6B"></div>
+        <div class="era-dot" style="background:#C0392B"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name" style="color:#C0392B">Meiji Period</div>
+          <div class="era-kanji">明治時代</div>
+          <div class="era-gov gov-modern">Meiji Emperor</div>
+        </div>
+        <div class="note-box">
+          Key events: <span class="key-fig">Meiji Restoration 1868</span>, Meiji Constitution 1889, Sino-Japanese War 1894–95, Russo-Japanese War 1904–05, <span class="key-fig">Anglo-Japanese Alliance 1902</span>
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Western pressure (Perry's Black Ships) collapses the shogunate. The Emperor restored to nominal power; oligarchs drive rapid Westernisation — railways, a conscript army, a constitution, and compulsory education — to resist colonisation.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Shinto separated from Buddhism and elevated as state religion. Western art imports alongside the invented tradition of <span class="key-fig">Nihonga</span> (Japanese painting). <span class="key-fig">Japonisme</span>: Japanese aesthetics profoundly influence European Impressionism.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Victorian zenith &amp; Industrial Revolution's spread. Japan consciously benchmarks Britain (navy), Germany (army), France (law). The two nations become formal allies in 1902.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Taisho -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">1912–1926</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#1B3A6B"></div>
+        <div class="era-dot" style="background:#1B3A6B"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Taishō Period</div>
+          <div class="era-kanji">大正時代</div>
+          <div class="era-gov gov-modern">Constitutional Monarchy</div>
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            "Taishō Democracy": genuine party politics and expanded male suffrage. Japan joins WWI on Allied side; gains Pacific island territories and a permanent seat on the League of Nations Council. Great Kantō Earthquake 1923.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Western modernity floods in: jazz, cinema, department stores, "modern girl" (moga) fashion. <span class="key-fig">Taishō Romanticism</span> in literature. The <span class="key-fig">Mingei</span> (Folk Craft) movement celebrates everyday beauty.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            WWI &amp; aftermath; Roaring Twenties. Both societies experience democratic optimism alongside economic strain and social upheaval in the wake of total war.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Showa -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">1926–1989</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#1B3A6B"></div>
+        <div class="era-dot" style="background:#1B3A6B"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Shōwa Period</div>
+          <div class="era-kanji">昭和時代</div>
+          <div class="era-gov gov-modern">Emperor (Military → Democracy)</div>
+        </div>
+        <div class="note-box">
+          Key events: <span class="key-fig">Manchuria 1931</span>, <span class="key-fig">Second Sino-Japanese War 1937</span>, <span class="key-fig">Pearl Harbour 1941</span>, <span class="key-fig">Hiroshima &amp; Nagasaki 1945</span>, GHQ Occupation 1945–52, <span class="key-fig">Economic Miracle</span> 1955–73
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Pre-war: military factions seize control; Japan expands across Asia. Defeated 1945; US-led occupation rewrites the constitution (peace clause, Article 9) and demilitarises. Post-war: democratic growth into world's second-largest economy.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Wartime: state Shinto and propaganda art dominate. Post-war: freedom of religion restored. <span class="key-fig">Manga and anime</span> emerge; Tezuka Osamu lays modern foundations.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            WWII → Cold War → Welfare State. Japan and Britain both rebuild post-war; both undergo economic recoveries.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heisei / Reiwa -->
+    <div class="era">
+      <div class="era-date">
+        <div class="era-date-label">Period</div>
+        <div class="era-date-range">1989–Present</div>
+      </div>
+      <div class="era-line">
+        <div class="era-line-bar" style="background:#1B3A6B"></div>
+        <div class="era-dot" style="background:#1B3A6B"></div>
+      </div>
+      <div class="era-content">
+        <div class="era-header">
+          <div class="era-name dark">Heisei &amp; Reiwa Periods</div>
+          <div class="era-kanji">平成・令和時代</div>
+          <div class="era-gov gov-modern">Constitutional Monarchy</div>
+        </div>
+        <div class="note-box">
+          Key events: <span class="key-fig">Bubble burst 1991</span>, Kobe Earthquake 1995, Fukushima disaster 2011, <span class="key-fig">Emperor Akihito abdicates 2019</span> → Emperor Naruhito (Reiwa era begins)
+        </div>
+        <div class="era-sections">
+          <div class="section section-jp">
+            <div class="section-label jp">Japan</div>
+            Asset bubble collapses (1991) → "Lost Decade(s)" of economic stagnation. Ageing population and falling birth rate pose structural challenges. IT revolution and digital transformation (DX) pursued. World's fourth-largest economy.
+          </div>
+          <div class="section section-culture">
+            <div class="section-label cu">Culture &amp; Religion</div>
+            Contemporary art diversifies. <span class="key-fig">Anime, manga, video games, J-pop</span> — "Cool Japan" — become major cultural exports and global soft power.
+          </div>
+          <div class="section section-uk">
+            <div class="section-label uk">Britain &amp; Europe</div>
+            Post-Cold War → Brexit era. Both nations face demographic ageing and economic uncertainty while remaining cultural exports of global influence.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="text-align:center;padding:1.2rem 1rem 0.5rem;font-size:11px;color:var(--text-muted);border-top:0.5px solid var(--era-border);margin-top:0.5rem;">
+    Based on the Japanese History Comprehensive Timeline document · All dates are approximate
+  </div>
+</div>
